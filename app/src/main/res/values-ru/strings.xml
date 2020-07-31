@@ -6,4 +6,21 @@
     <string name="sunny">Солнечно</string>
     <string name="tomorrow">Завтра</string>
     <string name="afterTomorrow">Послезавтра</string>
+    <string name="defaultCityName">Москва</string>
+    <string name="london">Лондон</string>
+    <string name="paris">Париж</string>
+    <string name="newYork">Нью-Йорк</string>
+    <string name="addInfo">Показать дополнительную ирформацию</string>
+    <string name="wind">Скорость ветра: 10</string>
+    <string name="pressure">Атмосферное давление: 760</string>
+    <string name="selectCityBtnText">Выбрать город</string>
+    <string name="selectedCityText">Выбран город:</string>
+    <string name="themeSelectorText">Тема</string>
+    <string name="lightTheme">Светлая</string>
+    <string name="darkTheme">Темная</string>
+    <string name="updateOnOpen">Обновлять при открытии приложения</string>
+    <string name="updateInBackgorund">Обновлять в фоне</string>
+    <string name="loadThemesBtn">Загрузить темы</string>
+    <string name="saveBtnText">Coхранить</string>
+    <string name="defaultBtnText">По умолчанию</string>
 </resources>

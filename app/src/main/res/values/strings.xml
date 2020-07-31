@@ -5,4 +5,21 @@
     <string name="sunny">Sunny</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="afterTomorrow">After tomorrow</string>
+    <string name="defaultCityName">Moscow</string>
+    <string name="london">London</string>
+    <string name="paris">Paris</string>
+    <string name="newYork">New York</string>
+    <string name="addInfo">Show additional info</string>
+    <string name="wind">Wind speed: 10</string>
+    <string name="pressure">Atmospheric pressure: 760</string>
+    <string name="selectCityBtnText">Select city</string>
+    <string name="selectedCityText">Selected city:</string>
+    <string name="themeSelectorText">Theme</string>
+    <string name="lightTheme">Light</string>
+    <string name="darkTheme">Dark</string>
+    <string name="updateOnOpen">Update on open app</string>
+    <string name="updateInBackgorund">Update in background</string>
+    <string name="loadThemesBtn">Load themes</string>
+    <string name="saveBtnText">Save</string>
+    <string name="defaultBtnText">Default</string>
 </resources>
