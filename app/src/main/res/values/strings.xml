@@ -22,4 +22,6 @@
     <string name="loadThemesBtn">Load themes</string>
     <string name="saveBtnText">Save</string>
     <string name="defaultBtnText">Default</string>
+    <string name="weather_picture">Weather picture</string>
+    <string name="updateDataButtonText">Update</string>
 </resources>

@@ -10,7 +10,7 @@
     <string name="london">Лондон</string>
     <string name="paris">Париж</string>
     <string name="newYork">Нью-Йорк</string>
-    <string name="addInfo">Показать дополнительную ирформацию</string>
+    <string name="addInfo">Показать доп. информацию</string>
     <string name="wind">Скорость ветра: 10</string>
     <string name="pressure">Атмосферное давление: 760</string>
     <string name="selectCityBtnText">Выбрать город</string>
@@ -23,4 +23,6 @@
     <string name="loadThemesBtn">Загрузить темы</string>
     <string name="saveBtnText">Coхранить</string>
     <string name="defaultBtnText">По умолчанию</string>
+    <string name="weather_picture">Картинка погоды</string>
+    <string name="updateDataButtonText">Обновить</string>
 </resources>

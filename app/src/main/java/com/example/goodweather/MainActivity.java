@@ -1,50 +1,80 @@
 package com.example.goodweather;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 public class MainActivity extends AppCompatActivity {
-    EditText cityNameEditText;
-    TextView londonTextView;
-    TextView parisTextView;
-    TextView newYorkTextView;
     TextView windTextView;
     TextView pressureTextView;
     CheckBox addInfoCheckBox;
-    Button selectCityBtn;
+    TextView temperature;
+    Button updateDataButton;
+
+    final String temperatureKey = "temperature";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.city_selector);
+        setContentView(R.layout.activity_main);
         findViews();
         setOnClickListeners();
-        windTextView.setVisibility(View.INVISIBLE);
-        pressureTextView.setVisibility(View.INVISIBLE);
+        setViewsVisible();
+        onLifeCycle("onCreate");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        onLifeCycle("onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        onLifeCycle("onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        onLifeCycle("onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        onLifeCycle("onStop");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        onLifeCycle("onRestart");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        onLifeCycle("onDestroy");
     }
 
     private void findViews(){
-        cityNameEditText = findViewById(R.id.cityNameEditText);
-        londonTextView = findViewById(R.id.londonTextView);
-        parisTextView = findViewById(R.id.parisTextView);
-        newYorkTextView = findViewById(R.id.newYorkTextView);
         windTextView = findViewById(R.id.windTextView);
         pressureTextView = findViewById(R.id.pressureTextView);
         addInfoCheckBox = findViewById(R.id.addInfoCheckBox);
-        selectCityBtn = findViewById(R.id.selectCityBtn);
+        temperature = findViewById(R.id.temperature);
+        updateDataButton = findViewById(R.id.updateDataButton);
     }
 
     private void setOnClickListeners(){
-        londonTextView.setOnClickListener(cityNameOnClick);
-        parisTextView.setOnClickListener(cityNameOnClick);
-        newYorkTextView.setOnClickListener(cityNameOnClick);
         addInfoCheckBox.setOnClickListener((View view) -> {
             if (((CheckBox)view).isChecked()) {
                 windTextView.setVisibility(View.VISIBLE);
@@ -54,17 +84,39 @@ public class MainActivity extends AppCompatActivity {
                 pressureTextView.setVisibility(View.INVISIBLE);
             }
         });
-        selectCityBtn.setOnClickListener((View view) -> {
-            Toast.makeText(getApplicationContext(),
-                    getText(R.string.selectedCityText) + " " + cityNameEditText.getText(),
-                    Toast.LENGTH_SHORT).show();
+        updateDataButton.setOnClickListener((View view) -> {
+            updateData();
         });
     }
 
-    View.OnClickListener cityNameOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            cityNameEditText.setText(((TextView)view).getText());
-        }
-    };
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString(temperatureKey, temperature.getText().toString());
+        super.onSaveInstanceState(outState);
+        onLifeCycle("onSaveInstanceState");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        temperature.setText(savedInstanceState.getString(temperatureKey));
+        setViewsVisible();
+        onLifeCycle("onRestoreInstanceState");
+    }
+
+    private void updateData(){
+        temperature.setText("+" + ((int)(Math.random()*5) + 20));
+    }
+
+    private void setViewsVisible() {
+        boolean showAddInfo = addInfoCheckBox.isChecked();
+        windTextView.setVisibility(showAddInfo? View.VISIBLE: View.INVISIBLE);
+        pressureTextView.setVisibility(showAddInfo? View.VISIBLE: View.INVISIBLE);
+    }
+
+    private void onLifeCycle(String action) {
+        String text = getString(R.string.app_name) + " " + action;
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        Log.d("onLifeCycle", text);
+    }
 }
