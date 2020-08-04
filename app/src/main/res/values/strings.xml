@@ -10,8 +10,8 @@
     <string name="paris">Paris</string>
     <string name="newYork">New York</string>
     <string name="addInfo">Show additional info</string>
-    <string name="wind">Wind speed: 10</string>
-    <string name="pressure">Atmospheric pressure: 760</string>
+    <string name="wind">Wind speed</string>
+    <string name="pressure">Atmospheric pressure</string>
     <string name="selectCityBtnText">Select city</string>
     <string name="selectedCityText">Selected city:</string>
     <string name="themeSelectorText">Theme</string>
@@ -24,4 +24,8 @@
     <string name="defaultBtnText">Default</string>
     <string name="weather_picture">Weather picture</string>
     <string name="updateDataButtonText">Update</string>
+    <string name="select_city">...</string>
+    <string name="windValue">10</string>
+    <string name="pressureValue">760</string>
+    <string name="yandexWeatherBtnText">Ya.W</string>
 </resources>

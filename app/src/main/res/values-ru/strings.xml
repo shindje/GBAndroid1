@@ -11,8 +11,8 @@
     <string name="paris">Париж</string>
     <string name="newYork">Нью-Йорк</string>
     <string name="addInfo">Показать доп. информацию</string>
-    <string name="wind">Скорость ветра: 10</string>
-    <string name="pressure">Атмосферное давление: 760</string>
+    <string name="wind">Скорость ветра</string>
+    <string name="pressure">Атмосферное давление</string>
     <string name="selectCityBtnText">Выбрать город</string>
     <string name="selectedCityText">Выбран город:</string>
     <string name="themeSelectorText">Тема</string>
@@ -25,4 +25,8 @@
     <string name="defaultBtnText">По умолчанию</string>
     <string name="weather_picture">Картинка погоды</string>
     <string name="updateDataButtonText">Обновить</string>
+    <string name="select_city">...</string>
+    <string name="windValue">10</string>
+    <string name="pressureValue">760</string>
+    <string name="yandexWeatherBtnText">Я.П</string>
 </resources>

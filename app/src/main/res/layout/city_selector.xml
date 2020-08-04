@@ -1,66 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/cityNameEditText"
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:text="@string/defaultCityName"
-        android:textAlignment="center"
-        tools:ignore="Autofill,LabelFor" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/londonTextView"
+        <EditText
+            android:id="@+id/cityNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="text"
+            android:text="@string/defaultCityName"
+            android:textAlignment="center"
+            tools:ignore="Autofill,LabelFor" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/london"
-        android:textAlignment="center"
-        android:textSize="18sp" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/parisTextView"
+        <TextView
+            android:id="@+id/londonTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/london"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/paris"
-        android:textAlignment="center"
-        android:textSize="18sp" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/newYorkTextView"
+        <TextView
+            android:id="@+id/parisTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paris"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/newYork"
-        android:textAlignment="center"
-        android:textSize="18sp" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <CheckBox
-        android:id="@+id/addInfoCheckBox"
+        <TextView
+            android:id="@+id/newYorkTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/newYork"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/addInfo" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/windTextView"
+        <CheckBox
+            android:id="@+id/addInfoCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/addInfo" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/wind" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/pressureTextView"
+        <TextView
+            android:id="@+id/windTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wind" />
+
+        <TextView
+            android:id="@+id/windValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/windValue" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/pressure" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/selectCityBtn"
+        <TextView
+            android:id="@+id/pressureTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pressure" />
+
+        <TextView
+            android:id="@+id/pressureValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pressureValue" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/selectCityBtnText" />
+        android:layout_height="match_parent"
+        android:gravity="center">
 
+        <Button
+            android:id="@+id/selectCityBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/selectCityBtnText" />
 
-</LinearLayout>
+    </TableRow>
+
+</TableLayout>
