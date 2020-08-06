@@ -7,49 +7,38 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/cityLabel"
+        android:id="@+id/cityTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:text="@string/cityLabel"
-        android:textSize="36sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:text="@string/defaultCity"
         android:textColor="#4CAF50"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cityLabel"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/temperature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="32dp"
         android:text="+20"
         android:textColor="#E91E63"
         android:textSize="36sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:contentDescription="@string/weather_picture"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/sunny" />
+        app:layout_constraintTop_toBottomOf="@+id/cityTextView"
+        app:srcCompat="@drawable/sunny"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/shortWeatherName"
@@ -66,11 +55,10 @@
         android:id="@+id/tomorrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
         android:layout_marginTop="8dp"
         android:text="@string/tomorrow"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/shortWeatherName" />
 
     <TextView
@@ -78,19 +66,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="+21"
         android:textColor="#E91E63"
-        app:layout_constraintStart_toStartOf="@+id/temperature"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shortWeatherName" />
 
     <TextView
         android:id="@+id/afterTomorrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
         android:layout_marginTop="16dp"
         android:text="@string/afterTomorrow"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tomorrow"
         app:layout_constraintTop_toBottomOf="@+id/tomorrow" />
 
     <TextView
@@ -100,16 +88,17 @@
         android:layout_marginTop="16dp"
         android:text="+23"
         android:textColor="#E91E63"
-        app:layout_constraintStart_toStartOf="@+id/temperature"
+        app:layout_constraintEnd_toEndOf="@+id/tomorrowTemp"
         app:layout_constraintTop_toBottomOf="@+id/tomorrowTemp" />
 
     <CheckBox
         android:id="@+id/addInfoCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/addInfo"
-        app:layout_constraintStart_toStartOf="@+id/afterTomorrow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/afterTomorrow" />
 
     <TextView
@@ -118,7 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/wind"
-        app:layout_constraintStart_toStartOf="@+id/addInfoCheckBox"
+        app:layout_constraintStart_toStartOf="@+id/afterTomorrow"
         app:layout_constraintTop_toBottomOf="@+id/addInfoCheckBox" />
 
     <TextView
@@ -136,8 +125,42 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/updateDataButtonText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/pressureTextView"
         app:layout_constraintTop_toBottomOf="@+id/pressureTextView" />
+
+    <Button
+        android:id="@+id/selectCityBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_city"
+        app:layout_constraintEnd_toStartOf="@+id/yandexWeatherBtn"
+        app:layout_constraintStart_toEndOf="@+id/updateDataButton"
+        app:layout_constraintTop_toTopOf="@+id/updateDataButton" />
+
+    <TextView
+        android:id="@+id/windValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/windValue"
+        app:layout_constraintEnd_toEndOf="@+id/afterTomorrowTemp"
+        app:layout_constraintTop_toTopOf="@+id/windTextView" />
+
+    <TextView
+        android:id="@+id/pressureValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressureValue"
+        app:layout_constraintEnd_toEndOf="@+id/windValueTextView"
+        app:layout_constraintTop_toTopOf="@+id/pressureTextView" />
+
+    <Button
+        android:id="@+id/yandexWeatherBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginEnd="8dp"
+        android:text="@string/yandexWeatherBtnText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/selectCityBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
