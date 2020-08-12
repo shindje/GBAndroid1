@@ -12,7 +12,7 @@
     <string name="newYork">Нью-Йорк</string>
     <string name="addInfo">Показать доп. информацию</string>
     <string name="wind">Скорость ветра</string>
-    <string name="pressure">Атмосферное давление</string>
+    <string name="pressure">Атм. давление</string>
     <string name="selectCityBtnText">Выбрать город</string>
     <string name="selectedCityText">Выбран город:</string>
     <string name="themeSelectorText">Тема</string>

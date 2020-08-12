@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,13 +8,13 @@
         android:id="@+id/cities"
         android:name="com.example.goodweather.fragments.CitySelector"
         android:layout_weight="1"
-        android:layout_width="0px"
-        android:layout_height="match_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="0px" />
 
     <FrameLayout
         android:id="@+id/weather_fragment"
-        android:layout_weight="2"
-        android:layout_width="0px"
-        android:layout_height="match_parent"  />
+        android:layout_weight="10"
+        android:layout_width="match_parent"
+        android:layout_height="0px"  />
 
 </LinearLayout>
