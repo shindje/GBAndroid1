@@ -5,5 +5,11 @@
         <item>Лондон</item>
         <item>Париж</item>
         <item>Нью-Йорк</item>
+        <item>Мадрид</item>
+    </string-array>
+    <string-array name="forecast_items">
+        <item>Вчера</item>
+        <item>Завтра</item>
+        <item>Послезавтра</item>
     </string-array>
 </resources>

@@ -6,31 +6,28 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.R;
 import com.example.goodweather.WeatherActivity;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class CitySelector extends Fragment implements IObserver {
-    private ListView citiesListView;
+    private RecyclerView citiesList;
     private int index = 0;
     private boolean isLandscape;
-    private ArrayList<Map<String, Object>> adapterData;
-    private SimpleAdapter adapter;
+    private RecyclerAdapter adapter;
     private static String[] cities;
     private static String[] temperatures;
 
@@ -47,7 +44,8 @@ public class CitySelector extends Fragment implements IObserver {
         cities = getResources().getStringArray(R.array.cities);
         if (temperatures == null)
             temperatures = getResources().getStringArray(R.array.temperatures);
-        initAdapterData();
+        isLandscape = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE;
         initList();
     }
 
@@ -55,15 +53,11 @@ public class CitySelector extends Fragment implements IObserver {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        isLandscape = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE;
-
         if (savedInstanceState != null) {
             index = savedInstanceState.getInt("index", 0);
         }
 
         if (isLandscape) {
-            citiesListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             showWeather();
         }
 
@@ -71,7 +65,7 @@ public class CitySelector extends Fragment implements IObserver {
     }
 
     private void findViews(View view){
-        citiesListView = view.findViewById(R.id.cities_list_view);
+        citiesList = view.findViewById(R.id.cities_list_view);
     }
 
 
@@ -88,36 +82,29 @@ public class CitySelector extends Fragment implements IObserver {
         super.onDestroyView();
     }
 
-    private void initAdapterData() {
-        adapterData = new ArrayList<Map<String, Object>>(cities.length);
-        Map <String, Object> m;
-        for (int i = 0; i < cities.length; i++) {
-            m = new HashMap<String, Object>();
-            m.put("city", cities[i]);
-            m.put("temperature", temperatures[i]);
-            adapterData.add(m);
-        }
-    }
-
     private void initList() {
-        adapter = new SimpleAdapter(getActivity(), adapterData, R.layout.city_item,
-                new String[]{"city", "temperature"},
-                new int[] {R.id.cityItemNameTextView, R.id.cityItemTemperatureTextView});
-
-        citiesListView.setAdapter(adapter);
-
-        citiesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        IRVOnItemClick cityListOnClick = new IRVOnItemClick() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClicked(int position) {
                 index = position;
                 showWeather();
             }
-        });
+        };
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext(),
+                isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
+        citiesList.setLayoutManager(layoutManager);
+        adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item);
+        citiesList.setAdapter(adapter);
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(getActivity().getBaseContext(),
+                isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);
+        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.city_item_separator));
+        citiesList.addItemDecoration(itemDecoration);
     }
 
     private void showWeather() {
         if (isLandscape) {
-            citiesListView.setItemChecked(index, true);
             WeatherFragment detail = (WeatherFragment)
                     Objects.requireNonNull(getFragmentManager()).findFragmentById(R.id.weather_fragment);
             if (detail == null || detail.getIndex() != index) {
@@ -143,10 +130,6 @@ public class CitySelector extends Fragment implements IObserver {
     @Override
     public void updateTemperature(String city, String temperature) {
         temperatures[index] = temperature;
-        for (Map <String, Object> m : adapterData) {
-            if (m.get("city").equals(city))
-                m.put("temperature", temperature);
-        }
         adapter.notifyDataSetChanged();
     }
 }

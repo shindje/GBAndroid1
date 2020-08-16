@@ -8,11 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.R;
 import com.example.goodweather.observer.Publisher;
@@ -29,6 +33,7 @@ public class WeatherFragment extends Fragment {
              windTextView, pressureTextView,  windValueTextView, pressureValueTextView;
     CheckBox addInfoCheckBox;
     Button updateDataButton, yandexWeatherBtn;
+    private RecyclerView forecasList;
 
     static WeatherFragment create(int index, String cityName, String temperature) {
         WeatherFragment fragment = new WeatherFragment();
@@ -78,6 +83,7 @@ public class WeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
+        initList();
         setOnClickListeners();
         setViewsVisible();
         cityTextView.setText(getCityName());
@@ -94,6 +100,27 @@ public class WeatherFragment extends Fragment {
         windValueTextView = view.findViewById(R.id.windValueTextView);
         pressureValueTextView = view.findViewById(R.id.pressureValueTextView);
         yandexWeatherBtn = view.findViewById(R.id.yandexWeatherBtn);
+        forecasList = view.findViewById(R.id.forecast_list_view);
+    }
+
+    private void initList() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext(),
+                LinearLayoutManager.VERTICAL, false);
+
+        forecasList.setLayoutManager(layoutManager);
+        String[] forecastItems = getResources().getStringArray(R.array.forecast_items);
+        String[] forecastValues = new String[forecastItems.length];
+        for (int i = 0; i < forecastValues.length; i++) {
+            forecastValues[i] = WeatherFragment.getRandomTemperature();
+        }
+        RecyclerAdapter forecasListAdapter = new RecyclerAdapter(forecastItems,
+                forecastValues, null, R.layout.forecast_item);
+        forecasList.setAdapter(forecasListAdapter);
+
+        DividerItemDecoration forecasListItemDecoration = new DividerItemDecoration(getActivity().getBaseContext(),
+                LinearLayout.VERTICAL);
+        forecasListItemDecoration.setDrawable(getResources().getDrawable(R.drawable.forecast_item_separator));
+        forecasList.addItemDecoration(forecasListItemDecoration);
     }
 
     private void setOnClickListeners(){
@@ -107,8 +134,12 @@ public class WeatherFragment extends Fragment {
         });
     }
 
+    public static String getRandomTemperature() {
+        return "+" + ((int)(Math.random()*15) + 20);
+    }
+
     private void updateData(){
-        String randomTemperature = "+" + ((int)(Math.random()*15) + 20);
+        String randomTemperature = getRandomTemperature();
         temperatureTextView.setText(randomTemperature);
         Publisher.getInstance().notify(getCityName(), randomTemperature);
     }
