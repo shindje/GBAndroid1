@@ -19,4 +19,11 @@
         <item>Tomorrom</item>
         <item>After tomorrow</item>
     </string-array>
+    <string-array name="web_city_names">
+        <item>moscow</item>
+        <item>london</item>
+        <item>paris</item>
+        <item>new-york</item>
+        <item>madrid</item>
+    </string-array>
 </resources>

@@ -24,15 +24,12 @@ import com.example.goodweather.observer.Publisher;
 import java.util.Objects;
 
 public class WeatherFragment extends Fragment {
-    static String[][] validCityNames = {{"Москва", "moscow"}, {"Moscow", "moscow"},
-            {"Лондон", "london"}, {"London", "london"},
-            {"Париж", "paris"}, {"Paris", "paris"},
-            {"Нью-Йорк", "new-york"}, {"New York", "new-york"}};
+    private static String[] webCityNames;
 
-    TextView cityTextView, temperatureTextView,
+    private TextView cityTextView, temperatureTextView,
              windTextView, pressureTextView,  windValueTextView, pressureValueTextView;
-    CheckBox addInfoCheckBox;
-    Button updateDataButton, yandexWeatherBtn;
+    private CheckBox addInfoCheckBox;
+    private Button updateDataButton, yandexWeatherBtn;
     private RecyclerView forecasList;
 
     static WeatherFragment create(int index, String cityName, String temperature) {
@@ -88,6 +85,7 @@ public class WeatherFragment extends Fragment {
         setViewsVisible();
         cityTextView.setText(getCityName());
         temperatureTextView.setText(getTemperature());
+        webCityNames = getResources().getStringArray(R.array.web_city_names);
     }
 
     private void findViews(View view){
@@ -153,11 +151,10 @@ public class WeatherFragment extends Fragment {
     }
 
     private String getCityforURL() {
-        String curCityName = cityTextView.getText().toString();
-        for (String[] names: validCityNames) {
-            if (names[0].equals(curCityName))
-                return names[1];
-        }
-        return "";
+        int index = getIndex();
+        if (index < webCityNames.length)
+            return webCityNames[index];
+        else
+            return "";
     }
 }

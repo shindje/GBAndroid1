@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.goodweather.CityBottomSheetDialog;
 import com.example.goodweather.R;
 import com.example.goodweather.WeatherActivity;
 import com.example.goodweather.observer.IObserver;
@@ -23,7 +24,7 @@ import com.example.goodweather.observer.Publisher;
 
 import java.util.Objects;
 
-public class CitySelector extends Fragment implements IObserver {
+public class CitySelector extends Fragment implements IObserver, CityBottomSheetDialog.BottomSheetListener {
     private RecyclerView citiesList;
     private int index = 0;
     private boolean isLandscape;
@@ -41,7 +42,8 @@ public class CitySelector extends Fragment implements IObserver {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
-        cities = getResources().getStringArray(R.array.cities);
+        if (cities == null)
+            cities = getResources().getStringArray(R.array.cities);
         if (temperatures == null)
             temperatures = getResources().getStringArray(R.array.temperatures);
         isLandscape = getResources().getConfiguration().orientation
@@ -83,11 +85,13 @@ public class CitySelector extends Fragment implements IObserver {
     }
 
     private void initList() {
+        final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
         IRVOnItemClick cityListOnClick = new IRVOnItemClick() {
             @Override
             public void onItemClicked(int position) {
                 index = position;
-                showWeather();
+                CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, cities[index]);
+                dialog.show(getFragmentManager(), "Диалог города");
             }
         };
 
@@ -131,5 +135,36 @@ public class CitySelector extends Fragment implements IObserver {
     public void updateTemperature(String city, String temperature) {
         temperatures[index] = temperature;
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBottomClicked(int code) {
+        if (code == CityBottomSheetDialog.BUTTON_CITY_SELECT_CODE) {
+            showWeather();
+        }
+        if (code == CityBottomSheetDialog.BUTTON_CITY_DELETE_CODE) {
+            deleteCity();
+        }
+    }
+
+    private void deleteCity() {
+        int newLength = cities.length > 0? cities.length: 0;
+        String[] newCities = new String[newLength];
+        String[] newTemperatures = new String[newLength];
+        for (int i = 0; i < cities.length; i++) {
+            if (i < index)
+                newCities[i] = cities[i];
+            else if (i > index)
+                newCities[i - 1] = cities[i];
+        }
+        for (int i = 0; i < temperatures.length; i++) {
+            if (i < index)
+                newTemperatures[i] = temperatures[i];
+            else if (i > index)
+                newTemperatures[i - 1] = temperatures[i];
+        }
+        cities = newCities;
+        temperatures = newTemperatures;
+        initList();
     }
 }
