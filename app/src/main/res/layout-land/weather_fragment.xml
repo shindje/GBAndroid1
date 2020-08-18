@@ -84,17 +84,6 @@
         app:layout_constraintStart_toEndOf="@+id/windValueTextView"
         app:layout_constraintTop_toTopOf="@+id/windValueTextView" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/updateDataButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/updateDataButtonText"
-        app:icon="@drawable/ic_baseline_refresh_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pressureTextView" />
-
     <TextView
         android:id="@+id/windValueTextView"
         android:layout_width="wrap_content"
@@ -113,16 +102,33 @@
         app:layout_constraintStart_toEndOf="@+id/pressureTextView"
         app:layout_constraintTop_toTopOf="@+id/pressureTextView" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/yandexWeatherBtn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="@string/yandexWeatherBtnText"
-        app:icon="@drawable/umbrella_red"
-        app:iconSize="20dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/updateDataButton"
-        app:layout_constraintTop_toTopOf="@+id/updateDataButton" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pressureTextView" >
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/updateDataButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/updateDataButtonText"
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            app:icon="@drawable/ic_baseline_refresh_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/yandexWeatherBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/yandexWeatherBtnText"
+            app:icon="@drawable/umbrella_red"
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            app:iconSize="20dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
