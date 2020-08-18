@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <fragment
-        android:id="@+id/cities"
-        android:name="com.example.goodweather.fragments.CitySelector"
-        android:layout_weight="1"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0px" />
+        android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/weather_fragment"
-        android:layout_weight="10"
-        android:layout_width="match_parent"
-        android:layout_height="0px"  />
+        <fragment
+            android:id="@+id/cities"
+            android:name="com.example.goodweather.fragments.CitySelector"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0px" />
 
-</LinearLayout>
+        <FrameLayout
+            android:id="@+id/weather_fragment"
+            android:layout_weight="10"
+            android:layout_width="match_parent"
+            android:layout_height="0px"  />
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        app:fabSize="mini"
+        app:srcCompat="@drawable/ic_outline_add_24" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

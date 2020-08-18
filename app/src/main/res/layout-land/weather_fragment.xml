@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/defaultCity"
         android:textColor="#4CAF50"
-        android:textSize="36sp"
+        style="@style/LargeText"
         app:layout_constraintEnd_toStartOf="@+id/forecast_list_view"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:text="@string/default_temperature"
         android:textColor="#E91E63"
-        android:textSize="36sp"
+        style="@style/LargeText"
         app:layout_constraintEnd_toEndOf="@+id/cityTextView"
         app:layout_constraintStart_toStartOf="@+id/cityTextView"
         app:layout_constraintTop_toBottomOf="@+id/cityTextView" />
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sunny"
         android:textColor="#FFEB3B"
-        android:textSize="36sp"
+        style="@style/LargeText"
         app:layout_constraintEnd_toEndOf="@+id/temperature"
         app:layout_constraintStart_toStartOf="@+id/temperature"
         app:layout_constraintTop_toBottomOf="@+id/temperature" />
@@ -84,11 +84,12 @@
         app:layout_constraintStart_toEndOf="@+id/windValueTextView"
         app:layout_constraintTop_toTopOf="@+id/windValueTextView" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/updateDataButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/updateDataButtonText"
+        app:icon="@drawable/ic_baseline_refresh_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,13 +113,14 @@
         app:layout_constraintStart_toEndOf="@+id/pressureTextView"
         app:layout_constraintTop_toTopOf="@+id/pressureTextView" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/yandexWeatherBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginEnd="8dp"
         android:text="@string/yandexWeatherBtnText"
+        app:icon="@drawable/umbrella_red"
+        app:iconSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/updateDataButton"
         app:layout_constraintTop_toTopOf="@+id/updateDataButton" />

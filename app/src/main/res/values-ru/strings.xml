@@ -28,5 +28,7 @@
     <string name="select_city">...</string>
     <string name="windValue">10</string>
     <string name="pressureValue">760</string>
-    <string name="yandexWeatherBtnText">Я.П</string>
+    <string name="yandexWeatherBtnText">Я.Погода</string>
+    <string name="show_weather">Показать погоду</string>
+    <string name="delete">Удалить</string>
 </resources>
