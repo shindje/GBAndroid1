@@ -3,6 +3,7 @@ package com.example.goodweather.fragments;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.R;
+import com.example.goodweather.data.Web;
+import com.example.goodweather.data.model.WeatherRequest;
 import com.example.goodweather.observer.Publisher;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 
 public class WeatherFragment extends Fragment {
@@ -31,6 +37,7 @@ public class WeatherFragment extends Fragment {
     private CheckBox addInfoCheckBox;
     private Button updateDataButton, yandexWeatherBtn;
     private RecyclerView forecasList;
+    public static final double GPA_TO_MMRTS = 0.750064;
 
     static WeatherFragment create(int index, String cityName, String temperature) {
         WeatherFragment fragment = new WeatherFragment();
@@ -137,9 +144,38 @@ public class WeatherFragment extends Fragment {
     }
 
     private void updateData(){
-        String randomTemperature = getRandomTemperature();
-        temperatureTextView.setText(randomTemperature);
-        Publisher.getInstance().notify(getCityName(), randomTemperature);
+        final Handler handler = new Handler(); // Запоминаем основной поток
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    WeatherRequest weatherRequest = Web.getWeather(cityTextView.getText().toString().replaceAll(" ", "%20"));
+                    String temperatureValue = String.format(Locale.getDefault(), "%+d",
+                            Math.round(weatherRequest.getMain().getTemp()));
+                    String windSpeed = "" + Math.round(weatherRequest.getWind().getSpeed());
+                    String pressure = "" + Math.round(weatherRequest.getMain().getPressure()*GPA_TO_MMRTS);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            temperatureTextView.setText(temperatureValue);
+                            windValueTextView.setText(windSpeed);
+                            pressureValueTextView.setText(pressure);
+                            Publisher.getInstance().notify(getCityName(), temperatureValue);
+                            Snackbar.make(getView(), cityTextView.getText().toString() + ": данные обновлены", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Snackbar.make(getView(), "Ошибка получения данных: " + e.getMessage(), Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                    });
+                }
+            }
+        }).start();
     }
 
     private void setViewsVisible() {
