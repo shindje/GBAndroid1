@@ -117,12 +117,10 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         ContextMenu.ContextMenuInfo menuInfo = item.getMenuInfo();
         int id = item.getItemId();
-        switch (id) {
-            case R.id.delete_context:
-                final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
-                CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(adapter.getItemIndexFromMenu()));
-                dialog.show(getSupportFragmentManager(), "Диалог города");
-                break;
+        if (id == R.id.delete_context) {
+            final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
+            CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(adapter.getItemIndexFromMenu()));
+            dialog.show(getSupportFragmentManager(), "Диалог города");
         }
         return super.onContextItemSelected(item);
     }
@@ -156,44 +154,57 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     private void setOnClickForSideMenuItems() {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_weather: {
-                        setWeatherFragment();
-                        drawer.close();
-                        break;
-                    }
-                    case R.id.nav_settings: {
-                        setSetingsFragment();
-                        drawer.close();
-                        break;
-                    }
-                    case R.id.nav_about: {
-                        setAboutFragment();
-                        drawer.close();
-                        break;
-                    }
-                    case R.id.nav_reply: {
-                        setReplyFragment();
-                        drawer.close();
-                        break;
-                    }                }
-                return true;
-            }
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.nav_weather: {
+                    setWeatherFragment();
+                    drawer.close();
+                    break;
+                }
+                case R.id.nav_settings: {
+                    setSetingsFragment();
+                    drawer.close();
+                    break;
+                }
+                case R.id.nav_about: {
+                    setAboutFragment();
+                    drawer.close();
+                    break;
+                }
+                case R.id.nav_reply: {
+                    setReplyFragment();
+                    drawer.close();
+                    break;
+                }                }
+            return true;
         });
     }
 
     private void setFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        WeatherFragment detail = (WeatherFragment)
-                getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
-        if (detail != null) {
-            fragmentTransaction.remove(detail);
+        if (!(fragment instanceof WeatherFragment)) {
+            hideWeatherFragment();
         }
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    private void hideWeatherFragment() {
+        WeatherFragment detail = (WeatherFragment)
+                getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
+        if (detail != null) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.remove(detail);
+            fragmentTransaction.commit();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (navigationView.getCheckedItem() == null || navigationView.getCheckedItem().getItemId() != R.id.nav_weather) {
+            hideWeatherFragment();
+        }
+        super.onBackPressed();
     }
 }

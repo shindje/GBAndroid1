@@ -1,5 +1,6 @@
 package com.example.goodweather.settings;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,40 +46,20 @@ public class SettingsFragment extends Fragment {
 
     private void setOnClickListeners() {
         themeRadioGroup.setOnCheckedChangeListener((RadioGroup group, int rb) -> {
-            if (rb == R.id.settings_dark_theme_rb) {
-                settings.isDarkTheme = true;
-            } else {
-                settings.isDarkTheme = false;
-            }
-            getActivity().recreate();
+            settings.isDarkTheme = (rb == R.id.settings_dark_theme_rb);
+            Activity activity = getActivity();
+            if (activity != null)
+                activity.recreate();
         });
-        updateOnStartCb.setOnCheckedChangeListener((CompoundButton cb, boolean val) -> {
-            if (val) {
-                settings.updateOnStart = true;
-            } else {
-                settings.updateOnStart = false;
-            }
-        });
-        updateInBackCb.setOnCheckedChangeListener((CompoundButton cb, boolean val) -> {
-            if (val) {
-                settings.updateInBackgorund = true;
-            } else {
-                settings.updateInBackgorund = false;
-            }
-        });
+        updateOnStartCb.setOnCheckedChangeListener((CompoundButton cb, boolean val) -> settings.updateOnStart = val);
+        updateInBackCb.setOnCheckedChangeListener((CompoundButton cb, boolean val) -> settings.updateInBackgorund = val);
     }
 
 
     private void initData() {
-        if (settings.isDarkTheme()) {
-            themeRadioGroup.check(R.id.settings_dark_theme_rb);
-        }
-        if (settings.isUpdateOnStart()) {
-            updateOnStartCb.setChecked(true);
-        }
-        if (settings.isUpdateInBackgorund()) {
-            updateInBackCb.setChecked(true);
-        }
+        themeRadioGroup.check(settings.isDarkTheme()? R.id.settings_dark_theme_rb: R.id.settings_light_theme_rb);
+        updateOnStartCb.setChecked(settings.isUpdateOnStart());
+        updateInBackCb.setChecked(settings.isUpdateInBackgorund());
     }
 
 }
