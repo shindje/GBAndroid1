@@ -17,18 +17,33 @@
     <string name="themeSelectorText">Theme</string>
     <string name="lightTheme">Light</string>
     <string name="darkTheme">Dark</string>
-    <string name="updateOnOpen">Update on open app</string>
+    <string name="updateOnStart">Update on start app</string>
     <string name="updateInBackgorund">Update in background</string>
     <string name="loadThemesBtn">Load themes</string>
     <string name="saveBtnText">Save</string>
-    <string name="defaultBtnText">Default</string>
+    <string name="defaultBtnText">Load default</string>
     <string name="weather_picture">Weather picture</string>
     <string name="updateDataButtonText">Update</string>
     <string name="select_city">...</string>
     <string name="windValue">10</string>
     <string name="pressureValue">760</string>
     <string name="yandexWeatherBtnText">Ya.Weather</string>
-    <string name="default_temperature" translatable="false">+20</string>
+    <string name="default_temperature" translatable="false">...</string>
     <string name="show_weather">Show weather</string>
     <string name="delete">Delete</string>
+    <string name="addButtonText">Add</string>
+    <string name="ok" translatable="false">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="deleteQuestion">will be deleted!</string>
+    <string name="weather">Weather</string>
+    <string name="settings">Settings</string>
+    <string name="about_developer">About developer</string>
+    <string name="reply">Reply</string>
+    <string name="nav_header_title">Geek University Android-developing faculty</string>
+    <string name="nav_header_subtitle" translatable="false">geekbrains.ru</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="developer">Korotkov Alexey</string>
+    <string name="dev_email" translatable="false">korotkov.aleksei@gmail.com</string>
+    <string name="send">Send</string>
 </resources>

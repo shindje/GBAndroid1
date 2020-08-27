@@ -1,5 +1,6 @@
-package com.example.goodweather.fragments;
+package com.example.goodweather.weather;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,17 +11,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.R;
 
+import java.util.List;
+
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private String[] data1;
-    private String[] data2;
+    private List<String> data1;
+    private List<String> data2;
     private IRVOnItemClick onItemClickCallback;
     private int itemLayoutId;
+    private Activity activity;
+    private int itemIndexFromMenu;
 
-    public RecyclerAdapter(String[] data1, String[] data2, IRVOnItemClick onItemClickCallback, int itemLayoutId) {
+    public RecyclerAdapter(List<String> data1, List<String> data2, IRVOnItemClick onItemClickCallback, int itemLayoutId, Activity activity) {
         this.data1 = data1;
         this.data2 = data2;
         this.onItemClickCallback = onItemClickCallback;
         this.itemLayoutId = itemLayoutId;
+        this.activity = activity;
     }
 
     @NonNull
@@ -33,17 +39,41 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String text1 = data1[position];
+        String text1 = data1.get(position);
         holder.setTextToTextView1(text1);
-        String text2 = data2[position];
+        String text2 = data2.get(position);
         holder.setTextToTextView2(text2);
-
         holder.setOnClickForItem(position);
+
+        TextView textView1 = holder.getTextView1();
+        TextView textView2 = holder.getTextView2();
+
+        // Определяем текущую позицию в списке
+        textView1.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                itemIndexFromMenu = position;
+                return false;
+            }
+        });
+        textView2.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                itemIndexFromMenu = position;
+                return false;
+            }
+        });
+
+
+        if (activity != null){
+            activity.registerForContextMenu(textView1);
+            activity.registerForContextMenu(textView2);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return data1 == null ? 0 : data1.length;
+        return data1 == null ? 0 : data1.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -83,5 +113,25 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 }
             });
         }
+
+        public TextView getTextView1() {
+            return textView1;
+        }
+
+        public void setTextView1(TextView textView1) {
+            this.textView1 = textView1;
+        }
+
+        public TextView getTextView2() {
+            return textView2;
+        }
+
+        public void setTextView2(TextView textView2) {
+            this.textView2 = textView2;
+        }
+    }
+
+    public int getItemIndexFromMenu() {
+        return itemIndexFromMenu;
     }
 }

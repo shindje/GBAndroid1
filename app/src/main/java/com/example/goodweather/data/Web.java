@@ -3,7 +3,7 @@ package com.example.goodweather.data;
 import android.util.Log;
 
 import com.example.goodweather.BuildConfig;
-import com.example.goodweather.data.model.WeatherRequest;
+import com.example.goodweather.data.model.WeatherData;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -16,7 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class Web {
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s";
 
-    public static WeatherRequest getWeather(String cityName) throws IOException {
+    public static WeatherData getWeather(String cityName) throws IOException {
         //API ключ хранится в корне проекта в файле apikey.properties в виде строки:
         //weather_api_key = "ключ"
         //Он необходим для сборки!
@@ -31,8 +31,8 @@ public class Web {
             String result = getLines(in);
             // преобразование данных запроса в модель
             Gson gson = new Gson();
-            final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-            return weatherRequest;
+            final WeatherData weatherData = gson.fromJson(result, WeatherData.class);
+            return weatherData;
         } catch (IOException e) {
             if (e instanceof FileNotFoundException)
                 throw new IOException("Город не найден!");
@@ -49,7 +49,6 @@ public class Web {
         StringBuilder sb = new StringBuilder();
         String line = in.readLine();
         while (line != null) {
-            Log.d("weather", "<" + line + ">");
             sb.append(line).append("\n");
             line = in.readLine();
         }

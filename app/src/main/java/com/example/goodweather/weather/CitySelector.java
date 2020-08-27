@@ -1,7 +1,8 @@
-package com.example.goodweather.fragments;
+package com.example.goodweather.weather;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,21 +17,22 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.goodweather.CityBottomSheetDialog;
+import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
-import com.example.goodweather.WeatherActivity;
+import com.example.goodweather.data.model.WeatherData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CitySelector extends Fragment implements IObserver, CityBottomSheetDialog.BottomSheetListener {
+public class CitySelector extends Fragment implements IObserver{
     private RecyclerView citiesList;
     private int index = 0;
     private boolean isLandscape;
     private RecyclerAdapter adapter;
-    private static String[] cities;
-    private static String[] temperatures;
+    private static List<String> cities;
+    private static List<String> temperatures;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,10 +44,18 @@ public class CitySelector extends Fragment implements IObserver, CityBottomSheet
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findViews(view);
-        if (cities == null)
-            cities = getResources().getStringArray(R.array.cities);
-        if (temperatures == null)
-            temperatures = getResources().getStringArray(R.array.temperatures);
+        if (cities == null) {
+            cities = new ArrayList<>();
+            for (String city: getResources().getStringArray(R.array.cities)) {
+                cities.add(city);
+            }
+        }
+        if (temperatures == null) {
+            temperatures = new ArrayList<>();
+            for (int i = 0; i < cities.size(); i++) {
+                temperatures.add(getString(R.string.default_temperature));
+            }
+        }
         isLandscape = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
         initList();
@@ -85,21 +95,20 @@ public class CitySelector extends Fragment implements IObserver, CityBottomSheet
     }
 
     private void initList() {
-        final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
         IRVOnItemClick cityListOnClick = new IRVOnItemClick() {
             @Override
             public void onItemClicked(int position) {
                 index = position;
-                CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, cities[index]);
-                dialog.show(getFragmentManager(), "Диалог города");
+                showWeather();
             }
         };
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext(),
                 isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
         citiesList.setLayoutManager(layoutManager);
-        adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item);
+        adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item, getActivity());
         citiesList.setAdapter(adapter);
+        ((MainActivity)getActivity()).setAdapter(adapter);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getActivity().getBaseContext(),
                 isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);
@@ -110,11 +119,11 @@ public class CitySelector extends Fragment implements IObserver, CityBottomSheet
     private void showWeather() {
         if (isLandscape) {
             WeatherFragment detail = (WeatherFragment)
-                    Objects.requireNonNull(getFragmentManager()).findFragmentById(R.id.weather_fragment);
+                    getParentFragmentManager().findFragmentById(R.id.weather_fragment);
             if (detail == null || detail.getIndex() != index) {
-                detail = WeatherFragment.create(index, cities[index], temperatures[index]);
+                detail = WeatherFragment.create(index, cities.get(index), temperatures.get(index));
 
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getParentFragmentManager().beginTransaction();
                 ft.replace(R.id.weather_fragment, detail);
                 ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                 ft.addToBackStack(null);
@@ -122,49 +131,34 @@ public class CitySelector extends Fragment implements IObserver, CityBottomSheet
             }
         } else {
             Intent intent = new Intent();
-            intent.setClass(Objects.requireNonNull(getActivity()), WeatherActivity.class);
+            intent.setClass(requireActivity(), WeatherActivity.class);
 
             intent.putExtra("index", index);
-            intent.putExtra("cityName", cities[index]);
-            intent.putExtra("temperature", temperatures[index]);
+            intent.putExtra("cityName", cities.get(index));
+            intent.putExtra("temperature", temperatures.get(index));
             startActivity(intent);
         }
     }
 
     @Override
-    public void updateTemperature(String city, String temperature) {
-        temperatures[index] = temperature;
+    public void updateData(Integer idx, WeatherData weatherData) {
+        temperatures.set(idx, weatherData.getMain().getTempStr());
+        adapter.notifyItemChanged(idx);
+    }
+
+    public static List<String> getCities(Resources resources) {
+        if (cities == null) {
+            cities = new ArrayList<>();
+            for (String city: resources.getStringArray(R.array.cities)) {
+                cities.add(city);
+            }
+        }
+        return cities;
+    }
+
+    public static void deleteCity(int index, RecyclerAdapter adapter) {
+        cities.remove(index);
+        temperatures.remove(index);
         adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onBottomClicked(int code) {
-        if (code == CityBottomSheetDialog.BUTTON_CITY_SELECT_CODE) {
-            showWeather();
-        }
-        if (code == CityBottomSheetDialog.BUTTON_CITY_DELETE_CODE) {
-            deleteCity();
-        }
-    }
-
-    private void deleteCity() {
-        int newLength = cities.length > 0? cities.length: 0;
-        String[] newCities = new String[newLength];
-        String[] newTemperatures = new String[newLength];
-        for (int i = 0; i < cities.length; i++) {
-            if (i < index)
-                newCities[i] = cities[i];
-            else if (i > index)
-                newCities[i - 1] = cities[i];
-        }
-        for (int i = 0; i < temperatures.length; i++) {
-            if (i < index)
-                newTemperatures[i] = temperatures[i];
-            else if (i > index)
-                newTemperatures[i - 1] = temperatures[i];
-        }
-        cities = newCities;
-        temperatures = newTemperatures;
-        initList();
     }
 }
