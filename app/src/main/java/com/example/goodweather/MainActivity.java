@@ -21,6 +21,7 @@ import com.example.goodweather.settings.SettingsFragment;
 import com.example.goodweather.weather.CitySelector;
 import com.example.goodweather.weather.RecyclerAdapter;
 import com.example.goodweather.settings.Settings;
+import com.example.goodweather.weather.WeatherFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -186,6 +187,11 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
     private void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        WeatherFragment detail = (WeatherFragment)
+                getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
+        if (detail != null) {
+            fragmentTransaction.remove(detail);
+        }
         fragmentTransaction.replace(R.id.fragmentContainer, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
