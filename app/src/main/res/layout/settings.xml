@@ -1,89 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/themeSelectorText"
+        android:textAlignment="center" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_span="2"
-            android:text="@string/themeSelectorText"
-            android:textAlignment="center" />
-    </TableRow>
+    <RadioGroup
+        android:id="@+id/settings_theme_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <RadioGroup
+        <RadioButton
+            android:id="@+id/settings_light_theme_rb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_span="2"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="@string/lightTheme" />
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:checked="true"
-                android:text="@string/lightTheme" />
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/darkTheme" />
-        </RadioGroup>
-
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <CheckBox
-            android:id="@+id/checkBox2"
+        <RadioButton
+            android:id="@+id/settings_dark_theme_rb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_span="2"
-            android:text="@string/updateOnOpen" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <CheckBox
-            android:id="@+id/checkBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_span="2"
-            android:text="@string/updateInBackgorund" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+            android:layout_weight="1"
+            android:text="@string/darkTheme" />
+    </RadioGroup>
 
 
-        <Button
-            android:id="@+id/SaveBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/saveBtnText" />
+    <CheckBox
+        android:id="@+id/settings_update_on_start_cb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/updateOnStart" />
 
-        <Button
-            android:id="@+id/defaultBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/defaultBtnText" />
-    </TableRow>
-</TableLayout>
+    <CheckBox
+        android:id="@+id/settings_update_in_back_cb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/updateInBackgorund" />
+
+    <Button
+        android:id="@+id/defaultBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/defaultBtnText" />
+</LinearLayout>

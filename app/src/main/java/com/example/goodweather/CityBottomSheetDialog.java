@@ -14,8 +14,8 @@ import com.google.android.material.button.MaterialButton;
 
 public class CityBottomSheetDialog extends BottomSheetDialogFragment {
 
-    public static final int BUTTON_CITY_SELECT_CODE = 1;
-    public static final int BUTTON_CITY_DELETE_CODE = 2;
+    public static final int OK_CODE = 1;
+    public static final int CANCEL_CODE = 2;
     private BottomSheetListener listener;
     private String cityName;
 
@@ -34,14 +34,14 @@ public class CityBottomSheetDialog extends BottomSheetDialogFragment {
     }
 
     private void init(View view){
-        MaterialButton showCityButton = view.findViewById(R.id.show_city);
+        MaterialButton showCityButton = view.findViewById(R.id.dialog_ok_btn);
         showCityButton.setOnClickListener(view1 -> {
-            listener.onBottomClicked(BUTTON_CITY_SELECT_CODE);
+            listener.onBottomClicked(OK_CODE);
             dismiss();
         });
-        MaterialButton deleteCityButton = view.findViewById(R.id.delete_city);
+        MaterialButton deleteCityButton = view.findViewById(R.id.dialog_cancel_btn);
         deleteCityButton.setOnClickListener(view1 -> {
-            listener.onBottomClicked(BUTTON_CITY_DELETE_CODE);
+            listener.onBottomClicked(CANCEL_CODE);
             dismiss();
         });
         TextView cityNameTextView = view.findViewById(R.id.dialog_city_name);

@@ -16,6 +16,10 @@ public class Wind {
         return speed;
     }
 
+    public String getSpeedStr() {
+        return "" + Math.round(speed);
+    }
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }

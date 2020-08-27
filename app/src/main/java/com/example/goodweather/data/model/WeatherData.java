@@ -1,6 +1,6 @@
 package com.example.goodweather.data.model;
 
-public class WeatherRequest {
+public class WeatherData {
     private Coord coord;
     private Weather[] weather;
     private Main main;

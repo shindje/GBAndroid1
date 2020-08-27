@@ -18,7 +18,7 @@
     <string name="themeSelectorText">Тема</string>
     <string name="lightTheme">Светлая</string>
     <string name="darkTheme">Темная</string>
-    <string name="updateOnOpen">Обновлять при открытии приложения</string>
+    <string name="updateOnStart">Обновлять при запуске приложения</string>
     <string name="updateInBackgorund">Обновлять в фоне</string>
     <string name="loadThemesBtn">Загрузить темы</string>
     <string name="saveBtnText">Coхранить</string>
@@ -31,4 +31,16 @@
     <string name="yandexWeatherBtnText">Я.Погода</string>
     <string name="show_weather">Показать погоду</string>
     <string name="delete">Удалить</string>
+    <string name="addButtonText">Добавить</string>
+    <string name="cancel">Отмена</string>
+    <string name="deleteQuestion">будет удален!</string>
+    <string name="weather">Погода</string>
+    <string name="settings">Настройки</string>
+    <string name="about_developer">О разработчике</string>
+    <string name="reply">Форма обратной связи</string>
+    <string name="nav_header_title">Geek University Факультет Android-разработки</string>
+    <string name="navigation_drawer_open">Открыть боковое меню</string>
+    <string name="navigation_drawer_close">Скрыть боковое меню</string>
+    <string name="developer">Kоротков Алексей</string>
+    <string name="send">Отправить</string>
 </resources>

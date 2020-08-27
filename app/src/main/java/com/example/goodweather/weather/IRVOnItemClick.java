@@ -1,4 +1,4 @@
-package com.example.goodweather.fragments;
+package com.example.goodweather.weather;
 
 public interface IRVOnItemClick {
     void onItemClicked(int position);

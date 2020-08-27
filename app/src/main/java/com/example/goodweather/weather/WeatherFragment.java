@@ -1,4 +1,4 @@
-package com.example.goodweather.fragments;
+package com.example.goodweather.weather;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -20,16 +20,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.R;
-import com.example.goodweather.data.Web;
-import com.example.goodweather.data.model.WeatherRequest;
+import com.example.goodweather.data.DataUpdater;
+import com.example.goodweather.data.model.WeatherData;
+import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
-import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class WeatherFragment extends Fragment {
+public class WeatherFragment extends Fragment implements IObserver {
     private static String[] webCityNames;
 
     private TextView cityTextView, temperatureTextView,
@@ -37,7 +37,6 @@ public class WeatherFragment extends Fragment {
     private CheckBox addInfoCheckBox;
     private Button updateDataButton, yandexWeatherBtn;
     private RecyclerView forecasList;
-    public static final double GPA_TO_MMRTS = 0.750064;
 
     static WeatherFragment create(int index, String cityName, String temperature) {
         WeatherFragment fragment = new WeatherFragment();
@@ -52,7 +51,7 @@ public class WeatherFragment extends Fragment {
 
     int getIndex() {
         try {
-            int index = Objects.requireNonNull(getArguments()).getInt("index", 0);
+            int index = requireArguments().getInt("index", 0);
             return index;
         } catch (Exception e) {
             return 0;
@@ -61,7 +60,7 @@ public class WeatherFragment extends Fragment {
 
     String getCityName() {
         try {
-            String cityName = Objects.requireNonNull(getArguments()).getString("cityName", "");
+            String cityName = requireArguments().getString("cityName", "");
             return cityName;
         } catch (Exception e) {
             return "";
@@ -70,7 +69,7 @@ public class WeatherFragment extends Fragment {
 
     String getTemperature() {
         try {
-            String temperature = Objects.requireNonNull(getArguments()).getString("temperature", "");
+            String temperature = requireArguments().getString("temperature", "");
             return temperature;
         } catch (Exception e) {
             return "";
@@ -95,6 +94,18 @@ public class WeatherFragment extends Fragment {
         webCityNames = getResources().getStringArray(R.array.web_city_names);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Publisher.getInstance().subscribe(this);
+    }
+
+    @Override
+    public void onPause() {
+        Publisher.getInstance().unsubscribe(this);
+        super.onPause();
+    }
+
     private void findViews(View view){
         windTextView = view.findViewById(R.id.windTextView);
         pressureTextView = view.findViewById(R.id.pressureTextView);
@@ -113,13 +124,13 @@ public class WeatherFragment extends Fragment {
                 LinearLayoutManager.VERTICAL, false);
 
         forecasList.setLayoutManager(layoutManager);
-        String[] forecastItems = getResources().getStringArray(R.array.forecast_items);
-        String[] forecastValues = new String[forecastItems.length];
-        for (int i = 0; i < forecastValues.length; i++) {
-            forecastValues[i] = WeatherFragment.getRandomTemperature();
+        List<String> forecastItems = Arrays.asList(getResources().getStringArray(R.array.forecast_items));
+        List<String> forecastValues = new ArrayList();
+        for (int i = 0; i < forecastItems.size(); i++) {
+            forecastValues.add(WeatherFragment.getRandomTemperature());
         }
         RecyclerAdapter forecasListAdapter = new RecyclerAdapter(forecastItems,
-                forecastValues, null, R.layout.forecast_item);
+                forecastValues, null, R.layout.forecast_item, getActivity());
         forecasList.setAdapter(forecasListAdapter);
 
         DividerItemDecoration forecasListItemDecoration = new DividerItemDecoration(getActivity().getBaseContext(),
@@ -130,7 +141,7 @@ public class WeatherFragment extends Fragment {
 
     private void setOnClickListeners(){
         addInfoCheckBox.setOnClickListener(view -> setViewsVisible());
-        updateDataButton.setOnClickListener(view -> updateData());
+        updateDataButton.setOnClickListener(view -> updateViews());
         yandexWeatherBtn.setOnClickListener(view -> {
             String cityForURL = getCityforURL();
             Uri uri = Uri.parse("https://yandex.ru/pogoda/" + cityForURL);
@@ -143,39 +154,20 @@ public class WeatherFragment extends Fragment {
         return "+" + ((int)(Math.random()*15) + 20);
     }
 
-    private void updateData(){
-        final Handler handler = new Handler(); // Запоминаем основной поток
-        new Thread(new Runnable() {
+    private void updateViews() {
+        DataUpdater.WeatherRequestRunnable ok = new DataUpdater.WeatherRequestRunnable() {
+            @Override
             public void run() {
-                try {
-                    WeatherRequest weatherRequest = Web.getWeather(cityTextView.getText().toString().replaceAll(" ", "%20"));
-                    String temperatureValue = String.format(Locale.getDefault(), "%+d",
-                            Math.round(weatherRequest.getMain().getTemp()));
-                    String windSpeed = "" + Math.round(weatherRequest.getWind().getSpeed());
-                    String pressure = "" + Math.round(weatherRequest.getMain().getPressure()*GPA_TO_MMRTS);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            temperatureTextView.setText(temperatureValue);
-                            windValueTextView.setText(windSpeed);
-                            pressureValueTextView.setText(pressure);
-                            Publisher.getInstance().notify(getCityName(), temperatureValue);
-                            Snackbar.make(getView(), cityTextView.getText().toString() + ": данные обновлены", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Snackbar.make(getView(), "Ошибка получения данных: " + e.getMessage(), Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
-                        }
-                    });
-                }
+                updateViews(weatherData);
             }
-        }).start();
+        };
+        DataUpdater.updateData(new Handler(), getView(), CitySelector.getCities(getResources()), getIndex(), ok);
+    }
+
+    private void updateViews(WeatherData weatherData) {
+        temperatureTextView.setText(weatherData.getMain().getTempStr());
+        windValueTextView.setText(weatherData.getWind().getSpeedStr());
+        pressureValueTextView.setText(weatherData.getMain().getPressureMMStr());
     }
 
     private void setViewsVisible() {
@@ -192,5 +184,12 @@ public class WeatherFragment extends Fragment {
             return webCityNames[index];
         else
             return "";
+    }
+
+    @Override
+    public void updateData(Integer idx, WeatherData weatherData) {
+        if (idx == getIndex()) {
+            updateViews(weatherData);
+        }
     }
 }
