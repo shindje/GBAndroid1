@@ -181,7 +181,9 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     private void setFragment(Fragment fragment) {
-        if (!(fragment instanceof WeatherFragment)) {
+        if (fragment instanceof WeatherFragment) {
+            showWeatherFragment();
+        } else {
             hideWeatherFragment();
         }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -193,16 +195,28 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     private void hideWeatherFragment() {
         WeatherFragment detail = (WeatherFragment)
                 getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
-        if (detail != null) {
+        if (detail != null && !detail.isHidden()) {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.remove(detail);
+            fragmentTransaction.hide(detail);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private void showWeatherFragment() {
+        WeatherFragment detail = (WeatherFragment)
+                getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
+        if (detail != null && detail.isHidden()) {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.show(detail);
             fragmentTransaction.commit();
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (navigationView.getCheckedItem() == null || navigationView.getCheckedItem().getItemId() != R.id.nav_weather) {
+        if (navigationView.getCheckedItem() != null && navigationView.getCheckedItem().getItemId() == R.id.nav_weather) {
+            showWeatherFragment();
+        } else {
             hideWeatherFragment();
         }
         super.onBackPressed();
