@@ -26,6 +26,8 @@ import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CitySelector extends Fragment implements IObserver{
@@ -48,9 +50,7 @@ public class CitySelector extends Fragment implements IObserver{
         findViews(view);
         if (cities == null) {
             cities = new ArrayList<>();
-            for (String city: getResources().getStringArray(R.array.cities)) {
-                cities.add(city);
-            }
+            cities.addAll(Arrays.asList(getResources().getStringArray(R.array.cities)));
         }
         if (temperatures == null) {
             temperatures = new ArrayList<>();
@@ -97,15 +97,12 @@ public class CitySelector extends Fragment implements IObserver{
     }
 
     private void initList() {
-        IRVOnItemClick cityListOnClick = new IRVOnItemClick() {
-            @Override
-            public void onItemClicked(int position) {
-                index = position;
-                showWeather();
-            }
+        IRVOnItemClick cityListOnClick = position -> {
+            index = position;
+            showWeather();
         };
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext(),
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity().getBaseContext(),
                 isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
         citiesList.setLayoutManager(layoutManager);
         adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item, getActivity());
@@ -151,9 +148,7 @@ public class CitySelector extends Fragment implements IObserver{
     public static List<String> getCities(Resources resources) {
         if (cities == null) {
             cities = new ArrayList<>();
-            for (String city: resources.getStringArray(R.array.cities)) {
-                cities.add(city);
-            }
+            Collections.addAll(cities, resources.getStringArray(R.array.cities));
         }
         return cities;
     }
