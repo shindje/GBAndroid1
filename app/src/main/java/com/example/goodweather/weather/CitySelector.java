@@ -161,4 +161,10 @@ public class CitySelector extends Fragment implements IObserver{
         temperatures.remove(index);
         adapter.notifyDataSetChanged();
     }
+
+    public static void addCity(String cityName, String temperature, RecyclerAdapter adapter) {
+        cities.add(cityName);
+        temperatures.add(temperature);
+        adapter.notifyDataSetChanged();
+    }
 }
