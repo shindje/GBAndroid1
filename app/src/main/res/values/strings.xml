@@ -24,7 +24,7 @@
     <string name="defaultBtnText">Load default</string>
     <string name="weather_picture">Weather picture</string>
     <string name="updateDataButtonText">Update</string>
-    <string name="select_city">...</string>
+    <string name="select_city">…</string>
     <string name="windValue">10</string>
     <string name="pressureValue">760</string>
     <string name="yandexWeatherBtnText">Ya.Weather</string>
@@ -32,7 +32,11 @@
     <string name="show_weather">Show weather</string>
     <string name="delete">Delete</string>
     <string name="addButtonText">Add</string>
-    <string name="ok" translatable="false">Ok</string>
+    <string name="addDialogTitle">Add city</string>
+    <string name="addDialogHint">City Name</string>
+    <string name="addDialogEmptyError">Empty string entered</string>
+    <string name="addDialogAlreadyAddedError">City already added</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="cancel">Cancel</string>
     <string name="deleteQuestion">will be deleted!</string>
     <string name="weather">Weather</string>

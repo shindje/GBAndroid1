@@ -7,9 +7,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -102,8 +104,41 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     private void showAddItemDialog(View view) {
-        Snackbar.make(view, "Здесь будет вызов диалога добавления города", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        // Создаем билдер и передаем контекст приложения
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        // Вытащим макет диалога
+        final View contentView = getLayoutInflater().inflate(R.layout.add_diaolog, null);
+        // в билдере указываем заголовок окна (можно указывать как ресурс, так и строку)
+        builder.setTitle(R.string.addDialogTitle)
+                // Установим макет диалога (можно устанавливать любой view)
+                .setView(contentView)
+                .setPositiveButton(R.string.addButtonText, null);
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        //Переопределяем обработку нажатия BUTTON_POSITIVE, чтобы диалог не закрывался, если ввод неверен
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
+                v -> {
+                    EditText editText = contentView.findViewById(R.id.editText);
+                    if (validateCityEditText(editText)) {
+                        CitySelector.addCity(editText.getText().toString(), getString(R.string.default_temperature), adapter);
+                        alert.dismiss();
+                    }
+                }
+        );
+    }
+
+    private boolean validateCityEditText(EditText editText) {
+        String text = editText.getText().toString();
+        if (text.equals("")) {
+            editText.setError(getString(R.string.addDialogEmptyError));
+            return false;
+        }
+        if (CitySelector.getCities(getResources()).indexOf(text) > -1) {
+            editText.setError(getString(R.string.addDialogAlreadyAddedError));
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -120,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         if (id == R.id.delete_context) {
             final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
             CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(adapter.getItemIndexFromMenu()));
-            dialog.show(getSupportFragmentManager(), "Диалог города");
+            dialog.show(getSupportFragmentManager(), "Диалог удаления города");
         }
         return super.onContextItemSelected(item);
     }
