@@ -32,16 +32,18 @@ public class TemperatureView extends View {
     private int width;
     // Высота элемента
     private int height;
-    // Толщина внешнего градусника
-    private static int outerThickness;
+    // Толщина градусника
+    private static int thickness;
     // Радиус внешнего градусника
     private static int radius;
 
     // Константы
     // Отступ элементов
-    private final static int padding = 10;
-    //Максимальное значение температуры
+    private final static int padding = 5;
+    // Максимальное значение температуры
     private final static double maximumTemperature = 40;
+    // Толщина показателя температуры
+    private final static float innerThickness = 6f;
 
 
     public TemperatureView(Context context) {
@@ -124,9 +126,8 @@ public class TemperatureView extends View {
         innerPaint.setStyle(Paint.Style.FILL);
 
         if (temperature != null) {
-            int right =  (int) ((width - padding - outerThickness) * ((double) (Math.abs(temperature)/maximumTemperature)));
+            int right =  (int) ((width - padding - thickness) * ((double) (Math.abs(temperature)/maximumTemperature)));
 
-            int innerThickness = height - padding*8;
             innerPath = new Path();
             int innerRadius = (height - padding*2)/4;
             innerPath.addCircle(padding + radius, height/2.0f, innerRadius, Path.Direction.CW);
@@ -143,27 +144,28 @@ public class TemperatureView extends View {
         // Получить реальные ширину и высоту
         width = w - getPaddingLeft() - getPaddingRight();
         height = h - getPaddingTop() - getPaddingBottom();
-        outerThickness = height - padding*4;
-        // Отрисовка
-
+        thickness = height - padding*6;
         radius = (height - padding*2)/2;
 
+        // Отрисовка
         outerPath = new Path();
         outerPath.addCircle(padding + radius, height/2.0f, radius, Path.Direction.CW);
-        outerPath.addRect(padding + radius, height/2.0f - outerThickness/2.0f,
-                width - padding - radius/2.0f, height/2.0f + outerThickness/2.0f,
+        outerPath.addRect(padding + radius, height/2.0f - thickness/2.0f,
+                width - padding - radius/2.0f, height/2.0f + thickness/2.0f,
                 Path.Direction.CW);
-        outerPath.addCircle(width - padding - outerThickness/2.0f, height/2.0f,
-                outerThickness/2.0f, Path.Direction.CW);
-        outerPath.addRect(width/2.0f - 2, height/2.0f, width/2.0f + 2, height-padding,
-                Path.Direction.CCW);
-        outerPath.addRect(width - padding - radius/2.0f - 2, height/2.0f,
-                width - padding - radius/2.0f + 2, height-padding, Path.Direction.CCW);
-        outerPath.addRect(width/4.0f - 2, height/2.0f, width/4.0f + 2, height-padding,
-                Path.Direction.CCW);
-        outerPath.addRect(width - padding - radius/2.0f - width/4.0f - 2, height/2.0f,
-                width - padding - radius/2.0f - width/4.0f + 2, height-padding, Path.Direction.CCW);
+        outerPath.addCircle(width - padding - thickness/2.0f, height/2.0f,
+                thickness/2.0f, Path.Direction.CW);
 
+        // Линии отметок
+        float top = height/2.0f + thickness/2.0f;
+        float dy = height - padding - top;
+        float x0 = padding + radius*2.0f;
+        float x1 = (width - padding - thickness/2.0f);
+        float dx = (x1-x0)/4.0f;
+        for (int i = 0; i < 5; i++) {
+            float bottom = top + dy * (2 - i%2);
+            outerPath.addRect(x0 + dx*i - 2, top,  x0 + dx*i + 2, bottom, Path.Direction.CCW);
+        }
 
         initInnerShape();
     }
