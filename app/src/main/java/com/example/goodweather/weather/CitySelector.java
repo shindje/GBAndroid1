@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
+import com.example.goodweather.data.DataUpdater;
 import com.example.goodweather.data.model.WeatherData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
@@ -166,5 +168,6 @@ public class CitySelector extends Fragment implements IObserver{
         cities.add(cityName);
         temperatures.add(temperature);
         adapter.notifyDataSetChanged();
+        DataUpdater.updateData(new Handler(), null, cities, cities.size() - 1, null);
     }
 }
