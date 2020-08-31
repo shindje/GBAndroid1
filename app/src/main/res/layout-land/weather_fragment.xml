@@ -21,7 +21,7 @@
     <com.example.goodweather.custom.TemperatureView
         android:id="@+id/temperatureView"
         android:layout_width="100dp"
-        android:layout_height="20dp"
+        android:layout_height="30dp"
         android:layout_marginStart="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/temperature"
         app:layout_constraintEnd_toStartOf="@+id/temperature"

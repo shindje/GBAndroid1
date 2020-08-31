@@ -4,7 +4,6 @@
         <attr name="outer_color" format="color" />
         <attr name="plus_color" format="color" />
         <attr name="minus_color" format="color" />
-        <attr name="zero_color" format="color" />
         <attr name="temperature" format="integer" />
     </declare-styleable>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
+import com.example.goodweather.data.DataUpdater;
 import com.example.goodweather.data.model.WeatherData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CitySelector extends Fragment implements IObserver{
@@ -46,9 +50,7 @@ public class CitySelector extends Fragment implements IObserver{
         findViews(view);
         if (cities == null) {
             cities = new ArrayList<>();
-            for (String city: getResources().getStringArray(R.array.cities)) {
-                cities.add(city);
-            }
+            cities.addAll(Arrays.asList(getResources().getStringArray(R.array.cities)));
         }
         if (temperatures == null) {
             temperatures = new ArrayList<>();
@@ -95,15 +97,12 @@ public class CitySelector extends Fragment implements IObserver{
     }
 
     private void initList() {
-        IRVOnItemClick cityListOnClick = new IRVOnItemClick() {
-            @Override
-            public void onItemClicked(int position) {
-                index = position;
-                showWeather();
-            }
+        IRVOnItemClick cityListOnClick = position -> {
+            index = position;
+            showWeather();
         };
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext(),
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity().getBaseContext(),
                 isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
         citiesList.setLayoutManager(layoutManager);
         adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item, getActivity());
@@ -149,9 +148,7 @@ public class CitySelector extends Fragment implements IObserver{
     public static List<String> getCities(Resources resources) {
         if (cities == null) {
             cities = new ArrayList<>();
-            for (String city: resources.getStringArray(R.array.cities)) {
-                cities.add(city);
-            }
+            Collections.addAll(cities, resources.getStringArray(R.array.cities));
         }
         return cities;
     }
@@ -166,5 +163,6 @@ public class CitySelector extends Fragment implements IObserver{
         cities.add(cityName);
         temperatures.add(temperature);
         adapter.notifyDataSetChanged();
+        DataUpdater.updateData(new Handler(), null, cities, cities.size() - 1, null);
     }
 }

@@ -5,7 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -13,35 +13,33 @@ import com.example.goodweather.R;
 
 public class TemperatureView extends View {
     // Цвет внешнего градускника
-    private int outerColor = Color.BLACK;
+    private int outerColor = getResources().getColor(R.color.colorPrimary);
     // Цвет выше нуля
     private int plusColor = Color.RED;
     // Цвет ниже нуля
-    private int minusColor = Color.BLUE;
-    // Цвет нуля
-    private int zeroColor = Color.GRAY;
+    private int minusColor = Color.CYAN;
     // Температура
     private Integer temperature = null;
     // Изображение внешнего градусника
-    private RectF outerRectangle = new RectF();
+    Path outerPath = new Path();
     // Изображение внутреннего градусника
-    private RectF innerRectangle = new RectF();
+    Path innerPath = new Path();
     // "Краска" внешнего градусника
     private Paint outerPaint;
     // "Краска" внутреннего градусника
     private Paint innerPaint;
     // Ширина элемента
-    private int width = 0;
+    private int width;
     // Высота элемента
-    private int height = 0;
+    private int height;
+    // Толщина внешнего градусника
+    private static int outerThickness;
+    // Радиус внешнего градусника
+    private static int radius;
 
     // Константы
     // Отступ элементов
     private final static int padding = 10;
-    // Скругление углов
-    private final static int round = 5;
-    // Отступ между внешним и внутренним градускником
-    private final static int outerPadding = 10;
     //Максимальное значение температуры
     private final static double maximumTemperature = 40;
 
@@ -89,13 +87,12 @@ public class TemperatureView extends View {
         // Чтобы получить какое-либо значение из этого массива,
         // надо вызвать соответсвующий метод, и передав в этот метод имя ресурса
         // указанного в файле определения атрибутов (attrs.xml)
-        outerColor = typedArray.getColor(R.styleable.TemperatureView_outer_color, Color.BLACK);
+        outerColor = typedArray.getColor(R.styleable.TemperatureView_outer_color,  getResources().getColor(R.color.colorPrimary));
         plusColor = typedArray.getColor(R.styleable.TemperatureView_plus_color, Color.RED);
 
         // вторым параметром идет значение по умолчанию, если атрибут не указан в макете,
         // то будет подставлятся эначение по умолчанию.
-        minusColor = typedArray.getColor(R.styleable.TemperatureView_minus_color, Color.BLUE);
-        zeroColor = typedArray.getColor(R.styleable.TemperatureView_zero_color, Color.GRAY);
+        minusColor = typedArray.getColor(R.styleable.TemperatureView_minus_color, Color.CYAN);
 
         if (typedArray.hasValue(R.styleable.TemperatureView_temperature))
             temperature = typedArray.getInteger(R.styleable.TemperatureView_temperature, 0);
@@ -111,29 +108,31 @@ public class TemperatureView extends View {
     private void init(){
         outerPaint = new Paint();
         outerPaint.setColor(outerColor);
-        outerPaint.setStyle(Paint.Style.STROKE);
-        outerPaint.setStrokeWidth(5);
-        initInnerRectangle();
+        outerPaint.setStyle(Paint.Style.FILL);
+        initInnerShape();
     }
 
-    private void initInnerRectangle() {
+    private void initInnerShape() {
         innerPaint = new Paint();
-        if (temperature == null || temperature == 0) {
-            innerPaint.setColor(zeroColor);
-        } else if (temperature > 0) {
-            innerPaint.setColor(plusColor);
-        } else {
-            innerPaint.setColor(minusColor);
+        if (temperature != null) {
+            if (temperature > 0) {
+                innerPaint.setColor(plusColor);
+            } else {
+                innerPaint.setColor(minusColor);
+            }
         }
         innerPaint.setStyle(Paint.Style.FILL);
 
         if (temperature != null) {
-            int right =  (int) ((width - padding - outerPadding) * ((double) (Math.abs(temperature)/maximumTemperature)));
+            int right =  (int) ((width - padding - outerThickness) * ((double) (Math.abs(temperature)/maximumTemperature)));
 
-            innerRectangle.set(padding + outerPadding,
-                    padding + outerPadding,
-                    right,
-                    height - padding - outerPadding);
+            int innerThickness = height - padding*8;
+            innerPath = new Path();
+            int innerRadius = (height - padding*2)/4;
+            innerPath.addCircle(padding + radius, height/2.0f, innerRadius, Path.Direction.CW);
+            innerPath.addRect(padding + radius, height/2.0f - innerThickness/2.0f,
+                    right, height/2.0f + innerThickness/2.0f,
+                    Path.Direction.CW);
         }
     }
 
@@ -144,26 +143,44 @@ public class TemperatureView extends View {
         // Получить реальные ширину и высоту
         width = w - getPaddingLeft() - getPaddingRight();
         height = h - getPaddingTop() - getPaddingBottom();
+        outerThickness = height - padding*4;
         // Отрисовка
-        outerRectangle.set(padding,
-                padding,
-                width - padding,
-                height - padding);
 
-        initInnerRectangle();
+        radius = (height - padding*2)/2;
+
+        outerPath = new Path();
+        outerPath.addCircle(padding + radius, height/2.0f, radius, Path.Direction.CW);
+        outerPath.addRect(padding + radius, height/2.0f - outerThickness/2.0f,
+                width - padding - radius/2.0f, height/2.0f + outerThickness/2.0f,
+                Path.Direction.CW);
+        outerPath.addCircle(width - padding - outerThickness/2.0f, height/2.0f,
+                outerThickness/2.0f, Path.Direction.CW);
+        outerPath.addRect(width/2.0f - 2, height/2.0f, width/2.0f + 2, height-padding,
+                Path.Direction.CCW);
+        outerPath.addRect(width - padding - radius/2.0f - 2, height/2.0f,
+                width - padding - radius/2.0f + 2, height-padding, Path.Direction.CCW);
+        outerPath.addRect(width/4.0f - 2, height/2.0f, width/4.0f + 2, height-padding,
+                Path.Direction.CCW);
+        outerPath.addRect(width - padding - radius/2.0f - width/4.0f - 2, height/2.0f,
+                width - padding - radius/2.0f - width/4.0f + 2, height-padding, Path.Direction.CCW);
+
+
+        initInnerShape();
     }
 
     // Вызывается, когда надо нарисовать элемент
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawRoundRect(outerRectangle, round, round, outerPaint);
-        canvas.drawRoundRect(innerRectangle, round, round, innerPaint);
+        canvas.drawPath(outerPath, outerPaint);
+        canvas.drawPath(innerPath, innerPaint);
+
+//        canvas.drawRoundRect(innerRectangle, round, round, innerPaint);
     }
 
     public void setTemperature(Integer temperature) {
         this.temperature = temperature;
-        initInnerRectangle();
+        initInnerShape();
         invalidate();
     }
 
@@ -173,7 +190,7 @@ public class TemperatureView extends View {
         } else {
             this.temperature = Integer.parseInt(temperature);
         }
-        initInnerRectangle();
+        initInnerShape();
         invalidate();
     }
 }
