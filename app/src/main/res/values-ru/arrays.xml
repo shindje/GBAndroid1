@@ -6,6 +6,7 @@
         <item>Париж</item>
         <item>Нью-Йорк</item>
         <item>Мадрид</item>
+        <item>Гренландия</item>
     </string-array>
     <string-array name="forecast_items">
         <item>Вчера</item>

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.R;
+import com.example.goodweather.custom.TemperatureView;
 import com.example.goodweather.data.DataUpdater;
 import com.example.goodweather.data.model.WeatherData;
 import com.example.goodweather.observer.IObserver;
@@ -28,10 +29,12 @@ import com.example.goodweather.observer.Publisher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class WeatherFragment extends Fragment implements IObserver {
     private static String[] webCityNames;
 
+    private TemperatureView temperatureView;
     private TextView cityTextView, temperatureTextView,
              windTextView, pressureTextView,  windValueTextView, pressureValueTextView;
     private CheckBox addInfoCheckBox;
@@ -51,8 +54,7 @@ public class WeatherFragment extends Fragment implements IObserver {
 
     int getIndex() {
         try {
-            int index = requireArguments().getInt("index", 0);
-            return index;
+            return requireArguments().getInt("index", 0);
         } catch (Exception e) {
             return 0;
         }
@@ -60,8 +62,7 @@ public class WeatherFragment extends Fragment implements IObserver {
 
     String getCityName() {
         try {
-            String cityName = requireArguments().getString("cityName", "");
-            return cityName;
+            return requireArguments().getString("cityName", "");
         } catch (Exception e) {
             return "";
         }
@@ -69,8 +70,7 @@ public class WeatherFragment extends Fragment implements IObserver {
 
     String getTemperature() {
         try {
-            String temperature = requireArguments().getString("temperature", "");
-            return temperature;
+            return requireArguments().getString("temperature", "");
         } catch (Exception e) {
             return "";
         }
@@ -91,6 +91,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         setViewsVisible();
         cityTextView.setText(getCityName());
         temperatureTextView.setText(getTemperature());
+        temperatureView.setTemperature(getTemperature());
         webCityNames = getResources().getStringArray(R.array.web_city_names);
     }
 
@@ -111,6 +112,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         pressureTextView = view.findViewById(R.id.pressureTextView);
         addInfoCheckBox = view.findViewById(R.id.addInfoCheckBox);
         temperatureTextView = view.findViewById(R.id.temperature);
+        temperatureView = view.findViewById(R.id.temperatureView);
         updateDataButton = view.findViewById(R.id.updateDataButton);
         cityTextView = view.findViewById(R.id.cityTextView);
         windValueTextView = view.findViewById(R.id.windValueTextView);
@@ -120,12 +122,12 @@ public class WeatherFragment extends Fragment implements IObserver {
     }
 
     private void initList() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getBaseContext(),
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity().getBaseContext(),
                 LinearLayoutManager.VERTICAL, false);
 
         forecasList.setLayoutManager(layoutManager);
         List<String> forecastItems = Arrays.asList(getResources().getStringArray(R.array.forecast_items));
-        List<String> forecastValues = new ArrayList();
+        List<String> forecastValues = new ArrayList<>();
         for (int i = 0; i < forecastItems.size(); i++) {
             forecastValues.add(WeatherFragment.getRandomTemperature());
         }
@@ -133,7 +135,7 @@ public class WeatherFragment extends Fragment implements IObserver {
                 forecastValues, null, R.layout.forecast_item, getActivity());
         forecasList.setAdapter(forecasListAdapter);
 
-        DividerItemDecoration forecasListItemDecoration = new DividerItemDecoration(getActivity().getBaseContext(),
+        DividerItemDecoration forecasListItemDecoration = new DividerItemDecoration(requireActivity().getBaseContext(),
                 LinearLayout.VERTICAL);
         forecasListItemDecoration.setDrawable(getResources().getDrawable(R.drawable.forecast_item_separator));
         forecasList.addItemDecoration(forecasListItemDecoration);
@@ -166,6 +168,7 @@ public class WeatherFragment extends Fragment implements IObserver {
 
     private void updateViews(WeatherData weatherData) {
         temperatureTextView.setText(weatherData.getMain().getTempStr());
+        temperatureView.setTemperature(Math.round(weatherData.getMain().getTemp()));
         windValueTextView.setText(weatherData.getWind().getSpeedStr());
         pressureValueTextView.setText(weatherData.getMain().getPressureMMStr());
     }
