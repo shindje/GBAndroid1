@@ -1,7 +1,6 @@
 package com.example.goodweather.observer;
 
-import com.example.goodweather.data.model.WeatherData;
-
+import androidx.work.Data;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +26,9 @@ public class Publisher {
         observers.remove(observer);
     }
 
-    public void notify(Integer idx, WeatherData weatherData) {
+    public void notify(Integer idx, Data data) {
         for (IObserver observer : observers) {
-            observer.updateData(idx, weatherData);
+            observer.updateData(idx, data);
         }
     }
 }

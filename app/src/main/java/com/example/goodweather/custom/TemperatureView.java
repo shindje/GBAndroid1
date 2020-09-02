@@ -144,7 +144,7 @@ public class TemperatureView extends View {
         // Получить реальные ширину и высоту
         width = w - getPaddingLeft() - getPaddingRight();
         height = h - getPaddingTop() - getPaddingBottom();
-        thickness = height - padding*6;
+        thickness = height - padding*8;
         radius = (height - padding*2)/2;
 
         // Отрисовка
@@ -176,8 +176,6 @@ public class TemperatureView extends View {
         super.onDraw(canvas);
         canvas.drawPath(outerPath, outerPaint);
         canvas.drawPath(innerPath, innerPaint);
-
-//        canvas.drawRoundRect(innerRectangle, round, round, innerPaint);
     }
 
     public void setTemperature(Integer temperature) {
@@ -190,7 +188,11 @@ public class TemperatureView extends View {
         if (temperature.equals(getResources().getString(R.string.default_temperature))) {
             this.temperature = null;
         } else {
-            this.temperature = Integer.parseInt(temperature);
+            try {
+                this.temperature = Integer.parseInt(temperature);
+            } catch (NumberFormatException e) {
+                this.temperature = null;
+            }
         }
         initInnerShape();
         invalidate();

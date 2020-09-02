@@ -18,7 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.goodweather.data.DataUpdater;
+import com.example.goodweather.data.Getter;
 import com.example.goodweather.settings.SettingsFragment;
 import com.example.goodweather.weather.CitySelector;
 import com.example.goodweather.weather.RecyclerAdapter;
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         setContentView(R.layout.activity_main);
         initViews();
         if (savedInstanceState == null && Settings.getInstance().isUpdateOnStart()) {
-            updateFullData();
+            getFullData();
         }
 
         drawer = findViewById(R.id.drawer_layout);
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
         switch (id) {
             case R.id.menu_refresh_all:
-                updateFullData();
+                getFullData();
                 break;
             case R.id.menu_add:
                 showAddItemDialog(toolbar);
@@ -94,12 +94,14 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         }
     }
 
-    public void updateFullData() {
-        Snackbar.make(toolbar, "Обновление данных", Snackbar.LENGTH_LONG)
+    public void getFullData() {
+        Snackbar.make(toolbar, getString(R.string.data_updating), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
         List<String> cities = CitySelector.getCities(getResources());
         for (int i = 0; i < cities.size(); i++) {
-            DataUpdater.updateData(new Handler(), null, cities, i, null);
+            //TODOGetter.updateData(new Handler(), null, cities, i, null);
+            Getter.getData(getApplicationContext(), this, cities.get(i), i,
+                    this, null, null);
         }
     }
 
@@ -121,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                 v -> {
                     EditText editText = contentView.findViewById(R.id.editText);
                     if (validateCityEditText(editText)) {
-                        CitySelector.addCity(editText.getText().toString(), getString(R.string.default_temperature), adapter);
+                        CitySelector.addCity(this, this, editText.getText().toString(),
+                                getString(R.string.default_temperature), adapter);
                         alert.dismiss();
                     }
                 }

@@ -20,6 +20,6 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:textAlignment="textEnd"
-        android:textColor="#F44336"
+        android:textColor="@color/colorTemperature"
         style="@style/MiddleText" />
 </LinearLayout>

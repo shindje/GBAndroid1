@@ -20,6 +20,6 @@
         android:paddingEnd="8dp"
         android:text="@string/default_temperature"
         android:textAlignment="textEnd"
-        android:textColor="#F44336"
+        android:textColor="@color/colorTemperature"
         style="@style/SmallText" />
 </LinearLayout>

@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/default_temperature"
-        android:textColor="#E91E63"
+        android:textColor="@color/colorTemperature"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/temperatureView"
         app:layout_constraintTop_toTopOf="@+id/imageView" />

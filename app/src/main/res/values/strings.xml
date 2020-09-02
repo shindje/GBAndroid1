@@ -50,4 +50,8 @@
     <string name="developer">Korotkov Alexey</string>
     <string name="dev_email" translatable="false">korotkov.aleksei@gmail.com</string>
     <string name="send">Send</string>
+    <string name="data_updated">data is updated</string>
+    <string name="error_getting_data">data getting error</string>
+    <string name="data_updating">Updating data</string>
+    <string name="city_not_foud">City not found</string>
 </resources>

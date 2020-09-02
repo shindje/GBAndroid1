@@ -1,7 +1,7 @@
 package com.example.goodweather.observer;
 
-import com.example.goodweather.data.model.WeatherData;
+import androidx.work.Data;
 
 public interface IObserver {
-    void updateData(Integer idx, WeatherData weatherData);
+    void updateData(Integer idx, Data data);
 }

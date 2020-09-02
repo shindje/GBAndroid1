@@ -1,5 +1,7 @@
 package com.example.goodweather.weather;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -14,14 +16,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Data;
 
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
-import com.example.goodweather.data.DataUpdater;
-import com.example.goodweather.data.model.WeatherData;
+import com.example.goodweather.data.Converter;
+import com.example.goodweather.data.Getter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 
@@ -29,8 +33,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-public class CitySelector extends Fragment implements IObserver{
+public class CitySelector extends Fragment implements IObserver {
     private RecyclerView citiesList;
     private int index = 0;
     private boolean isLandscape;
@@ -107,9 +112,9 @@ public class CitySelector extends Fragment implements IObserver{
         citiesList.setLayoutManager(layoutManager);
         adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item, getActivity());
         citiesList.setAdapter(adapter);
-        ((MainActivity)getActivity()).setAdapter(adapter);
+        ((MainActivity) requireActivity()).setAdapter(adapter);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getActivity().getBaseContext(),
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(requireActivity().getBaseContext(),
                 isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.city_item_separator));
         citiesList.addItemDecoration(itemDecoration);
@@ -140,8 +145,8 @@ public class CitySelector extends Fragment implements IObserver{
     }
 
     @Override
-    public void updateData(Integer idx, WeatherData weatherData) {
-        temperatures.set(idx, weatherData.getMain().getTempStr());
+    public void updateData(Integer idx, Data data) {
+        temperatures.set(idx, data.getString(Converter.PARAM_TEMP_STR));
         adapter.notifyItemChanged(idx);
     }
 
@@ -159,10 +164,12 @@ public class CitySelector extends Fragment implements IObserver{
         adapter.notifyDataSetChanged();
     }
 
-    public static void addCity(String cityName, String temperature, RecyclerAdapter adapter) {
+    public static void addCity(Activity activity, LifecycleOwner lifecycleOwner, String cityName,
+                               String temperature, RecyclerAdapter adapter) {
         cities.add(cityName);
         temperatures.add(temperature);
         adapter.notifyDataSetChanged();
-        DataUpdater.updateData(new Handler(), null, cities, cities.size() - 1, null);
+        Getter.getData(activity.getApplicationContext(), lifecycleOwner, cityName, cities.size() - 1,
+                activity, null, null);
     }
 }

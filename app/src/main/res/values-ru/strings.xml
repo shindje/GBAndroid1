@@ -47,4 +47,8 @@
     <string name="navigation_drawer_close">Скрыть боковое меню</string>
     <string name="developer">Kоротков Алексей</string>
     <string name="send">Отправить</string>
+    <string name="data_updated">данные обновлены</string>
+    <string name="error_getting_data">ошибка получения данных</string>
+    <string name="data_updating">Обновление данных</string>
+    <string name="city_not_foud">Город не найден</string>
 </resources>
