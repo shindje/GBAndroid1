@@ -10,9 +10,9 @@ import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.RxWorker;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.goodweather.R;
@@ -20,28 +20,44 @@ import com.example.goodweather.data.source.OpenWeatherMap;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
 
-public class Getter extends Worker {
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.schedulers.Schedulers;
+
+public class Getter extends RxWorker {
     public Getter(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
     @NonNull
     @Override
-    public Result doWork() {
-        String cityName = getInputData().getString("cityName");
-        String cityNotFound = getInputData().getString("cityNotFound");
-        try {
-            String data = OpenWeatherMap.getWeather(cityName, cityNotFound);
-            Data output = new Data.Builder()
-                    .putString("stringData", data)
-                    .build();
-            return Result.success(output);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Data output = new Data.Builder()
-                    .putString("error", e.getLocalizedMessage())
-                    .build();
-            return Result.failure(output);
+    public Single<Result> createWork() {
+        Single<Result> single = Single.create(new OnSubscribe());
+        return single.subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+                .onErrorReturn(e -> {
+                    Data output = new Data.Builder()
+                            .putString("error", e.getLocalizedMessage())
+                            .build();
+                    return Result.failure(output);
+                });
+    }
+
+    private class OnSubscribe implements SingleOnSubscribe<Result> {
+        @Override
+        public void subscribe(SingleEmitter<Result> emitter) throws Exception {
+            String cityName = getInputData().getString("cityName");
+            String cityNotFound = getInputData().getString("cityNotFound");
+            try {
+                String data = OpenWeatherMap.getWeather(cityName, cityNotFound);
+                Data output = new Data.Builder()
+                        .putString("stringData", data)
+                        .build();
+                emitter.onSuccess(Result.success(output));
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+
         }
     }
 
@@ -56,11 +72,11 @@ public class Getter extends Worker {
     public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName, int idx,
                                 Activity activity, RunnableWithData onFinishAction, View view) {
         Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType (NetworkType.CONNECTED)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
         Data inputData = new Data.Builder()
                 .putString("cityName", cityName)
-                .putString("cityNotFound", activity == null? "": activity.getString(R.string.city_not_foud))
+                .putString("cityNotFound", activity == null ? "" : activity.getString(R.string.city_not_foud))
                 .build();
         OneTimeWorkRequest dataGetterRequest = new OneTimeWorkRequest.Builder(Getter.class)
                 .setConstraints(constraints)
