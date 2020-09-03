@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="16dp"
-    tools:context=".weather.WeatherActivity">
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/cityTextView"
@@ -35,7 +35,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/default_temperature"
-        android:textColor="#E91E63"
+        android:textColor="@color/colorTemperature"
         style="@style/LargeText"
         app:layout_constraintEnd_toStartOf="@+id/forecast_list_view"
         app:layout_constraintStart_toEndOf="@+id/temperatureView"

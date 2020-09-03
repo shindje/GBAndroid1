@@ -11,6 +11,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.example.goodweather.R;
 
+import java.util.Locale;
+
 public class TemperatureView extends View {
     // Цвет внешнего градускника
     private int outerColor = getResources().getColor(R.color.colorPrimary);
@@ -36,14 +38,23 @@ public class TemperatureView extends View {
     private static int thickness;
     // Радиус внешнего градусника
     private static int radius;
+    // Координаты отметок "0" и maximumTemperature
+    private static float markX0;
+    private static float markY0;
+    private static float markXMax;
+    private static float markYMax;
+    //Размер шрифта отметок
+    private static float markTextSize;
+    // Максимальное значение температуры
+    private static double maximumTemperature;
 
     // Константы
     // Отступ элементов
-    private final static int padding = 5;
-    // Максимальное значение температуры
-    private final static double maximumTemperature = 40;
+    private final static int PADDING = 5;
+    // Максимальное значение температуры по умолчанию
+    private static double DEFAULT_MAXIMUM_TEMPERATURE = 40;
     // Толщина показателя температуры
-    private final static float innerThickness = 6f;
+    private final static float INNER_THICKNESS = 6f;
 
 
     public TemperatureView(Context context) {
@@ -99,6 +110,11 @@ public class TemperatureView extends View {
         if (typedArray.hasValue(R.styleable.TemperatureView_temperature))
             temperature = typedArray.getInteger(R.styleable.TemperatureView_temperature, 0);
 
+        // get markTextSize
+        int[] styleAttrs = {android.R.attr.textSize};
+        typedArray = context.obtainStyledAttributes(R.style.SuperSmallText, styleAttrs);
+        markTextSize = typedArray.getDimension(0, 1);
+
         // В конце работы дадим сигнал,
         // что нам больше массив со значениями атрибутов не нужен
         // Система в дальнейшем будет переиспользовать этот объект,
@@ -125,14 +141,19 @@ public class TemperatureView extends View {
         }
         innerPaint.setStyle(Paint.Style.FILL);
 
+        innerPaint.setTextSize(markTextSize);
+
         if (temperature != null) {
-            int right =  (int) ((width - padding - thickness) * ((double) (Math.abs(temperature)/maximumTemperature)));
+            maximumTemperature = DEFAULT_MAXIMUM_TEMPERATURE;
+            while (Math.abs(temperature) > maximumTemperature)
+                maximumTemperature *= 2;
+            float right =  PADDING + radius*2 + (width - PADDING *2 - radius*2 -thickness) * (float)(Math.abs(temperature)/maximumTemperature);
 
             innerPath = new Path();
-            int innerRadius = (height - padding*2)/4;
-            innerPath.addCircle(padding + radius, height/2.0f, innerRadius, Path.Direction.CW);
-            innerPath.addRect(padding + radius, height/2.0f - innerThickness/2.0f,
-                    right, height/2.0f + innerThickness/2.0f,
+            int innerRadius = (height - PADDING *2)/4;
+            innerPath.addCircle(PADDING + radius, height/2.0f, innerRadius, Path.Direction.CW);
+            innerPath.addRect(PADDING + radius, height/2.0f - INNER_THICKNESS /2.0f,
+                    right, height/2.0f + INNER_THICKNESS /2.0f,
                     Path.Direction.CW);
         }
     }
@@ -144,28 +165,30 @@ public class TemperatureView extends View {
         // Получить реальные ширину и высоту
         width = w - getPaddingLeft() - getPaddingRight();
         height = h - getPaddingTop() - getPaddingBottom();
-        thickness = height - padding*6;
-        radius = (height - padding*2)/2;
+        thickness = height - PADDING *8;
+        radius = (height - PADDING *2)/2;
 
         // Отрисовка
         outerPath = new Path();
-        outerPath.addCircle(padding + radius, height/2.0f, radius, Path.Direction.CW);
-        outerPath.addRect(padding + radius, height/2.0f - thickness/2.0f,
-                width - padding - radius/2.0f, height/2.0f + thickness/2.0f,
+        outerPath.addCircle(PADDING + radius, height/2.0f, radius, Path.Direction.CW);
+        outerPath.addRect(PADDING + radius, height/2.0f - thickness/2.0f,
+                width - PADDING - radius/2.0f, height/2.0f + thickness/2.0f,
                 Path.Direction.CW);
-        outerPath.addCircle(width - padding - thickness/2.0f, height/2.0f,
+        outerPath.addCircle(width - PADDING - thickness/2.0f, height/2.0f,
                 thickness/2.0f, Path.Direction.CW);
 
         // Линии отметок
         float top = height/2.0f + thickness/2.0f;
-        float dy = height - padding - top;
-        float x0 = padding + radius*2.0f;
-        float x1 = (width - padding - thickness/2.0f);
-        float dx = (x1-x0)/4.0f;
-        for (int i = 0; i < 5; i++) {
-            float bottom = top + dy * (2 - i%2);
-            outerPath.addRect(x0 + dx*i - 2, top,  x0 + dx*i + 2, bottom, Path.Direction.CCW);
-        }
+        float bottom = height - PADDING;
+        float x0 = PADDING + radius*2.0f;
+        float x1 = (width - PADDING - thickness/2.0f);
+        outerPath.addRect(x0 - 2, top,  x0 + 2, bottom, Path.Direction.CCW);
+        outerPath.addRect(x1 - 2, top,  x1 + 2, bottom, Path.Direction.CCW);
+
+        markX0 = x0 + 5;
+        markY0 = bottom;
+        markXMax = x1 - 30;
+        markYMax = bottom;
 
         initInnerShape();
     }
@@ -176,8 +199,9 @@ public class TemperatureView extends View {
         super.onDraw(canvas);
         canvas.drawPath(outerPath, outerPaint);
         canvas.drawPath(innerPath, innerPaint);
-
-//        canvas.drawRoundRect(innerRectangle, round, round, innerPaint);
+        canvas.drawText("0", markX0, markY0, innerPaint);
+        canvas.drawText(String.format(Locale.getDefault(), "%d", Math.round(maximumTemperature)),
+                markXMax, markYMax, innerPaint);
     }
 
     public void setTemperature(Integer temperature) {
@@ -190,7 +214,11 @@ public class TemperatureView extends View {
         if (temperature.equals(getResources().getString(R.string.default_temperature))) {
             this.temperature = null;
         } else {
-            this.temperature = Integer.parseInt(temperature);
+            try {
+                this.temperature = Integer.parseInt(temperature);
+            } catch (NumberFormatException e) {
+                this.temperature = null;
+            }
         }
         initInnerShape();
         invalidate();

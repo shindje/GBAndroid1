@@ -3,7 +3,6 @@ package com.example.goodweather.weather;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +17,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Data;
 
 import com.example.goodweather.R;
 import com.example.goodweather.custom.TemperatureView;
-import com.example.goodweather.data.DataUpdater;
-import com.example.goodweather.data.model.WeatherData;
+import com.example.goodweather.data.Converter;
+import com.example.goodweather.data.Getter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class WeatherFragment extends Fragment implements IObserver {
     private static String[] webCityNames;
@@ -141,9 +141,21 @@ public class WeatherFragment extends Fragment implements IObserver {
         forecasList.addItemDecoration(forecasListItemDecoration);
     }
 
+    Getter.RunnableWithData onFinishUpdateAction = new Getter.RunnableWithData() {
+        @Override
+        public void run() {
+            updateViews(data);
+        }
+    };
+
     private void setOnClickListeners(){
         addInfoCheckBox.setOnClickListener(view -> setViewsVisible());
-        updateDataButton.setOnClickListener(view -> updateViews());
+        updateDataButton.setOnClickListener(view -> {
+            Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            Getter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
+                        getActivity(), onFinishUpdateAction, requireView());
+        });
         yandexWeatherBtn.setOnClickListener(view -> {
             String cityForURL = getCityforURL();
             Uri uri = Uri.parse("https://yandex.ru/pogoda/" + cityForURL);
@@ -156,21 +168,14 @@ public class WeatherFragment extends Fragment implements IObserver {
         return "+" + ((int)(Math.random()*15) + 20);
     }
 
-    private void updateViews() {
-        DataUpdater.WeatherRequestRunnable ok = new DataUpdater.WeatherRequestRunnable() {
-            @Override
-            public void run() {
-                updateViews(weatherData);
-            }
-        };
-        DataUpdater.updateData(new Handler(), getView(), CitySelector.getCities(getResources()), getIndex(), ok);
-    }
-
-    private void updateViews(WeatherData weatherData) {
-        temperatureTextView.setText(weatherData.getMain().getTempStr());
-        temperatureView.setTemperature(Math.round(weatherData.getMain().getTemp()));
-        windValueTextView.setText(weatherData.getWind().getSpeedStr());
-        pressureValueTextView.setText(weatherData.getMain().getPressureMMStr());
+    private void updateViews(Data data) {
+        if (isResumed()) {
+            temperatureTextView.setText(data.getString(Converter.PARAM_TEMP_STR));
+            float temp = data.getFloat(Converter.PARAM_TEMP, Float.MAX_VALUE);
+            temperatureView.setTemperature(temp == Float.MAX_VALUE ? null : Math.round(temp));
+            windValueTextView.setText(data.getString(Converter.PARAM_WIND_SPEED_STR));
+            pressureValueTextView.setText(data.getString(Converter.PARAM_PRESSURE_MM_STR));
+        }
     }
 
     private void setViewsVisible() {
@@ -190,9 +195,9 @@ public class WeatherFragment extends Fragment implements IObserver {
     }
 
     @Override
-    public void updateData(Integer idx, WeatherData weatherData) {
+    public void updateData(Integer idx, Data data) {
         if (idx == getIndex()) {
-            updateViews(weatherData);
+            updateViews(data);
         }
     }
 }
