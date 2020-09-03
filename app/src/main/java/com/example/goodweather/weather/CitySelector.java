@@ -122,8 +122,9 @@ public class CitySelector extends Fragment implements IObserver {
     }
 
     private void showWeather() {
+        WeatherFragment detail;
         if (isLandscape) {
-            WeatherFragment detail = (WeatherFragment)
+            detail = (WeatherFragment)
                     getParentFragmentManager().findFragmentById(R.id.weather_fragment);
             if (detail == null || detail.getIndex() != index) {
                 detail = WeatherFragment.create(index, cities.get(index), temperatures.get(index));
@@ -135,13 +136,8 @@ public class CitySelector extends Fragment implements IObserver {
                 ft.commit();
             }
         } else {
-            Intent intent = new Intent();
-            intent.setClass(requireActivity(), WeatherActivity.class);
-
-            intent.putExtra("index", index);
-            intent.putExtra("cityName", cities.get(index));
-            intent.putExtra("temperature", temperatures.get(index));
-            startActivity(intent);
+            detail = WeatherFragment.create(index, cities.get(index), temperatures.get(index));
+            ((MainActivity) requireActivity()).setFragment(detail);
         }
     }
 

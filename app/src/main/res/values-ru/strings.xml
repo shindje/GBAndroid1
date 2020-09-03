@@ -25,7 +25,6 @@
     <string name="defaultBtnText">По умолчанию</string>
     <string name="weather_picture">Картинка погоды</string>
     <string name="updateDataButtonText">Обновить</string>
-    <string name="select_city">…</string>
     <string name="windValue">10</string>
     <string name="pressureValue">760</string>
     <string name="yandexWeatherBtnText">Я.Погода</string>
@@ -38,7 +37,7 @@
     <string name="addDialogAlreadyAddedError">Город уже добавлен</string>
     <string name="cancel">Отмена</string>
     <string name="deleteQuestion">будет удален!</string>
-    <string name="weather">Погода</string>
+    <string name="menu_weather">Погода (выбор города)</string>
     <string name="settings">Настройки</string>
     <string name="about_developer">О разработчике</string>
     <string name="reply">Форма обратной связи</string>

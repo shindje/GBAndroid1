@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        setWeatherFragment();
+        setCitySelectorFragment();
         setOnClickForSideMenuItems();
     }
 
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         }
     }
 
-    private void setWeatherFragment() {
+    private void setCitySelectorFragment() {
         CitySelector fragment = new CitySelector();
         setFragment(fragment);
     }
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_weather: {
-                    setWeatherFragment();
+                    setCitySelectorFragment();
                     drawer.close();
                     break;
                 }
@@ -213,12 +213,13 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                     setReplyFragment();
                     drawer.close();
                     break;
-                }                }
+                }
+            }
             return true;
         });
     }
 
-    private void setFragment(Fragment fragment) {
+    public void setFragment(Fragment fragment) {
         if (fragment instanceof WeatherFragment) {
             showWeatherFragment();
         } else {
