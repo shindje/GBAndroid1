@@ -88,13 +88,23 @@ public class Getter extends RxWorker {
 
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(dataGetterRequest.getId())
                 .observe(lifecycleOwner, info -> {
-                    if (info.getState() == WorkInfo.State.FAILED && activity != null && view != null) {
-                        String error = info.getOutputData().getString("error");
-                        if (error == null)
-                            error = "";
+                    Data outputData = info.getOutputData();
 
-                        Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error , Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                    if (info.getState() == WorkInfo.State.FAILED) {
+                        Publisher.getInstance().notify(idx, outputData);
+
+                        if (activity != null && view != null) {
+                            String error = outputData.getString("error");
+                            if (error == null)
+                                error = "";
+
+                            Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                        if (onFinishAction != null && activity != null) {
+                            onFinishAction.setData(outputData);
+                            activity.runOnUiThread(onFinishAction);
+                        }
                     }
                 });
 
@@ -103,24 +113,28 @@ public class Getter extends RxWorker {
                     //Если был запуск
                     if (info.getRunAttemptCount() > 0) {
                         Data outputData = info.getOutputData();
-                        if (info.getState() == WorkInfo.State.FAILED && activity != null && view != null) {
-                            String error = outputData.getString("error");
-                            if (error == null)
-                                error = "";
-                            Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
-                                    .setAction("Action", null).show();
+                        if (info.getState() == WorkInfo.State.FAILED) {
+                            Publisher.getInstance().notify(idx, outputData);
+
+                            if (activity != null && view != null) {
+                                String error = outputData.getString("error");
+                                if (error == null)
+                                    error = "";
+                                Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
                         }
                         if (info.getState() == WorkInfo.State.SUCCEEDED) {
-                            if (onFinishAction != null && activity != null) {
-                                onFinishAction.setData(outputData);
-                                activity.runOnUiThread(onFinishAction);
-                            }
                             Publisher.getInstance().notify(idx, outputData);
 
                             if (activity != null && view != null) {
                                 Snackbar.make(view, cityName + ": " + activity.getString(R.string.data_updated), Snackbar.LENGTH_SHORT)
                                         .setAction("Action", null).show();
                             }
+                        }
+                        if (onFinishAction != null && activity != null) {
+                            onFinishAction.setData(outputData);
+                            activity.runOnUiThread(onFinishAction);
                         }
                     }
                 });

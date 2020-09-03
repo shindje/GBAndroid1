@@ -7,6 +7,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="AppDarkTheme" parent="Theme.MaterialComponents.NoActionBar"/>
+    <style name="SuperSmallText">
+        <item name="android:textSize">8sp</item>
+    </style>
     <style name="SmallText">
         <item name="android:textSize">14sp</item>
     </style>

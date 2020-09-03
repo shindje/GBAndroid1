@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                     EditText editText = contentView.findViewById(R.id.editText);
                     if (validateCityEditText(editText)) {
                         CitySelector.addCity(this, this, editText.getText().toString(),
-                                getString(R.string.default_temperature), adapter);
+                                getString(R.string.default_temperature), toolbar, adapter);
                         alert.dismiss();
                     }
                 }

@@ -25,6 +25,7 @@ import com.example.goodweather.data.Converter;
 import com.example.goodweather.data.Getter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -149,9 +150,12 @@ public class WeatherFragment extends Fragment implements IObserver {
 
     private void setOnClickListeners(){
         addInfoCheckBox.setOnClickListener(view -> setViewsVisible());
-        updateDataButton.setOnClickListener(view ->
-                Getter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
-                        getActivity(), onFinishUpdateAction, requireView()));
+        updateDataButton.setOnClickListener(view -> {
+            Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            Getter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
+                        getActivity(), onFinishUpdateAction, requireView());
+        });
         yandexWeatherBtn.setOnClickListener(view -> {
             String cityForURL = getCityforURL();
             Uri uri = Uri.parse("https://yandex.ru/pogoda/" + cityForURL);

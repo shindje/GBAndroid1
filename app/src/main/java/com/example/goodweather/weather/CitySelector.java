@@ -28,6 +28,7 @@ import com.example.goodweather.data.Converter;
 import com.example.goodweather.data.Getter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,11 +166,14 @@ public class CitySelector extends Fragment implements IObserver {
     }
 
     public static void addCity(Activity activity, LifecycleOwner lifecycleOwner, String cityName,
-                               String temperature, RecyclerAdapter adapter) {
+                               String temperature, View view, RecyclerAdapter adapter) {
         cities.add(cityName);
         temperatures.add(temperature);
         adapter.notifyDataSetChanged();
+        Snackbar.make(view, cityName + ": " + activity.getResources().getString(R.string.data_updating),
+                Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
         Getter.getData(activity.getApplicationContext(), lifecycleOwner, cityName, cities.size() - 1,
-                activity, null, null);
+                activity, null, view);
     }
 }
