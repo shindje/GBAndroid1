@@ -10,6 +10,7 @@ public class Converter {
     public static final String PARAM_WIND_SPEED_STR = "windSpeedStr";
     public static final String PARAM_PRESSURE_MM_STR = "pressureMMStr";
     public static final String PARAM_DESCRIPTION = "description";
+    public static final String PARAM_ICON = "icon";
 
     public static Data convert(WeatherData weatherData) {
         return new Data.Builder()
@@ -18,6 +19,7 @@ public class Converter {
                 .putString(PARAM_WIND_SPEED_STR, weatherData.getWind().getSpeedStr())
                 .putString(PARAM_PRESSURE_MM_STR, weatherData.getMain().getPressureMMStr())
                 .putString(PARAM_DESCRIPTION, weatherData.getWeather()[0].getDescription())
+                .putString(PARAM_ICON, weatherData.getWeather()[0].getIcon())
                 .build();
     }
 }

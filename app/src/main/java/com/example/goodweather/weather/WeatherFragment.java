@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import com.example.goodweather.data.RunnableWithData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +43,7 @@ public class WeatherFragment extends Fragment implements IObserver {
     private CheckBox addInfoCheckBox;
     private Button updateDataButton, yandexWeatherBtn;
     private RecyclerView forecasList;
+    private ImageView weatherIconView;
 
     static WeatherFragment create(int index, String cityName, String temperature) {
         WeatherFragment fragment = new WeatherFragment();
@@ -100,6 +103,9 @@ public class WeatherFragment extends Fragment implements IObserver {
     public void onResume() {
         super.onResume();
         Publisher.getInstance().subscribe(this);
+        if (isVisible()) {
+            getData(weatherIconView);
+        }
     }
 
     @Override
@@ -121,6 +127,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         yandexWeatherBtn = view.findViewById(R.id.yandexWeatherBtn);
         forecasList = view.findViewById(R.id.forecast_list_view);
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescription);
+        weatherIconView = view.findViewById(R.id.weatherIcon);
     }
 
     private void initList() {
@@ -143,21 +150,10 @@ public class WeatherFragment extends Fragment implements IObserver {
         forecasList.addItemDecoration(forecasListItemDecoration);
     }
 
-    RunnableWithData onFinishUpdateAction = new RunnableWithData() {
-        @Override
-        public void run() {
-            updateViews(data);
-        }
-    };
-
     private void setOnClickListeners(){
         addInfoCheckBox.setOnClickListener(view -> setViewsVisible());
-        updateDataButton.setOnClickListener(view -> {
-            Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
-                        getActivity(), onFinishUpdateAction, requireView());
-        });
+        updateDataButton.setOnClickListener(this::getData);
+        weatherIconView.setOnClickListener(this::getData);
         yandexWeatherBtn.setOnClickListener(view -> {
             String cityForURL = getCityforURL();
             Uri uri = Uri.parse("https://yandex.ru/pogoda/" + cityForURL);
@@ -178,6 +174,10 @@ public class WeatherFragment extends Fragment implements IObserver {
             windValueTextView.setText(data.getString(Converter.PARAM_WIND_SPEED_STR));
             pressureValueTextView.setText(data.getString(Converter.PARAM_PRESSURE_MM_STR));
             weatherDescriptionTextView.setText(data.getString(Converter.PARAM_DESCRIPTION));
+            Picasso.get()
+                    .load("http://openweathermap.org/img/wn/" + data.getString(Converter.PARAM_ICON) + "@2x.png")
+                    .placeholder(R.drawable.ic_baseline_refresh_24)
+                    .into(weatherIconView);
         }
     }
 
@@ -202,5 +202,19 @@ public class WeatherFragment extends Fragment implements IObserver {
         if (idx == getIndex()) {
             updateViews(data);
         }
+    }
+
+    RunnableWithData onFinishUpdateAction = new RunnableWithData() {
+        @Override
+        public void run() {
+            updateViews(data);
+        }
+    };
+
+    private void getData(View view) {
+        Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+        RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
+                getActivity(), onFinishUpdateAction, requireView());
     }
 }

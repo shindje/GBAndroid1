@@ -15,17 +15,17 @@
         android:textColor="#4CAF50"
         style="@style/LargeText"
         app:layout_constraintEnd_toStartOf="@+id/forecast_list_view"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.goodweather.custom.TemperatureView
         android:id="@+id/temperatureView"
         android:layout_width="100dp"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:layout_marginStart="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/temperature"
         app:layout_constraintEnd_toStartOf="@+id/temperature"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
         app:layout_constraintTop_toTopOf="@+id/temperature" />
 
     <TextView
@@ -42,14 +42,14 @@
         app:layout_constraintTop_toBottomOf="@+id/cityTextView" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/weatherIcon"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sunny"
+        app:srcCompat="@drawable/ic_baseline_refresh_24"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -57,12 +57,11 @@
         style="@style/MediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/dots"
-        android:textColor="#FFEB3B"
-        app:layout_constraintEnd_toEndOf="@+id/temperature"
-        app:layout_constraintStart_toStartOf="@+id/temperature"
-        app:layout_constraintTop_toBottomOf="@+id/forecast_list_view" />
+        android:textColor="@color/design_default_color_secondary_variant"
+        app:layout_constraintEnd_toEndOf="@+id/cityTextView"
+        app:layout_constraintStart_toStartOf="@+id/cityTextView"
+        app:layout_constraintTop_toBottomOf="@+id/temperature" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/forecast_list_view"
@@ -76,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="@string/addInfo"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/weatherIcon"
         app:layout_constraintTop_toBottomOf="@+id/weatherDescription" />
 
     <TextView

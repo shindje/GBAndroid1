@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.goodweather.data.RetrofitGetter;
-import com.example.goodweather.data.RxWorkerGetter;
 import com.example.goodweather.settings.SettingsFragment;
 import com.example.goodweather.weather.CitySelector;
 import com.example.goodweather.weather.RecyclerAdapter;

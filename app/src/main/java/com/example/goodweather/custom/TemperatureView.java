@@ -112,7 +112,7 @@ public class TemperatureView extends View {
 
         // get markTextSize
         int[] styleAttrs = {android.R.attr.textSize};
-        typedArray = context.obtainStyledAttributes(R.style.SuperSmallText, styleAttrs);
+        typedArray = context.obtainStyledAttributes(R.style.SmallText, styleAttrs);
         markTextSize = typedArray.getDimension(0, 1);
 
         // В конце работы дадим сигнал,
@@ -164,7 +164,7 @@ public class TemperatureView extends View {
 
         // Получить реальные ширину и высоту
         width = w - getPaddingLeft() - getPaddingRight();
-        height = h - getPaddingTop() - getPaddingBottom();
+        height = h - getPaddingTop() - getPaddingBottom() - PADDING *4;
         thickness = height - PADDING *8;
         radius = (height - PADDING *2)/2;
 
@@ -179,7 +179,7 @@ public class TemperatureView extends View {
 
         // Линии отметок
         float top = height/2.0f + thickness/2.0f;
-        float bottom = height - PADDING;
+        float bottom = height + PADDING*3;
         float x0 = PADDING + radius*2.0f;
         float x1 = (width - PADDING - thickness/2.0f);
         outerPath.addRect(x0 - 2, top,  x0 + 2, bottom, Path.Direction.CCW);
@@ -187,7 +187,7 @@ public class TemperatureView extends View {
 
         markX0 = x0 + 5;
         markY0 = bottom;
-        markXMax = x1 - 30;
+        markXMax = x1 - 55;
         markYMax = bottom;
 
         initInnerShape();
