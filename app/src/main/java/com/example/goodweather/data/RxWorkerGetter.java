@@ -25,8 +25,8 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
 
-public class Getter extends RxWorker {
-    public Getter(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+public class RxWorkerGetter extends RxWorker {
+    public RxWorkerGetter(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
@@ -45,7 +45,7 @@ public class Getter extends RxWorker {
 
     private class OnSubscribe implements SingleOnSubscribe<Result> {
         @Override
-        public void subscribe(SingleEmitter<Result> emitter) throws Exception {
+        public void subscribe(SingleEmitter<Result> emitter) {
             String cityName = getInputData().getString("cityName");
             String cityNotFound = getInputData().getString("cityNotFound");
             try {
@@ -61,14 +61,6 @@ public class Getter extends RxWorker {
         }
     }
 
-    public static abstract class RunnableWithData implements Runnable {
-        public Data data;
-
-        void setData(Data data) {
-            this.data = data;
-        }
-    }
-
     public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName, int idx,
                                 Activity activity, RunnableWithData onFinishAction, View view) {
         Constraints constraints = new Constraints.Builder()
@@ -78,12 +70,12 @@ public class Getter extends RxWorker {
                 .putString("cityName", cityName)
                 .putString("cityNotFound", activity == null ? "" : activity.getString(R.string.city_not_foud))
                 .build();
-        OneTimeWorkRequest dataGetterRequest = new OneTimeWorkRequest.Builder(Getter.class)
+        OneTimeWorkRequest dataGetterRequest = new OneTimeWorkRequest.Builder(RxWorkerGetter.class)
                 .setConstraints(constraints)
                 .setInputData(inputData)
                 .build();
 
-        OneTimeWorkRequest dataConverterRequest = new OneTimeWorkRequest.Builder(Converter.class)
+        OneTimeWorkRequest dataConverterRequest = new OneTimeWorkRequest.Builder(RxWorkerConverter.class)
                 .build();
 
         WorkManager.getInstance(context).getWorkInfoByIdLiveData(dataGetterRequest.getId())

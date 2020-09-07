@@ -20,11 +20,11 @@
     <com.example.goodweather.custom.TemperatureView
         android:id="@+id/temperatureView"
         android:layout_width="100dp"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:layout_marginStart="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/temperature"
         app:layout_constraintEnd_toStartOf="@+id/temperature"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
         app:layout_constraintTop_toTopOf="@+id/temperature" />
 
     <TextView
@@ -37,27 +37,38 @@
         android:textColor="@color/colorTemperature"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/temperatureView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/weatherIcon"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cityTextView"
-        app:srcCompat="@drawable/sunny"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_baseline_info_100"
         tools:ignore="ContentDescription" />
 
+    <ProgressBar
+        android:id="@+id/weatherIconProgressBar"
+        android:indeterminate="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cityTextView" />
+
     <TextView
-        android:id="@+id/shortWeatherName"
+        android:id="@+id/weatherDescription"
+        style="@style/MediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sunny"
-        android:textColor="#FFEB3B"
-        style="@style/LargeText"
+        android:layout_marginTop="8dp"
+        android:text="@string/dots"
+        android:textColor="@color/design_default_color_secondary_variant"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
         app:layout_constraintTop_toBottomOf="@+id/temperature" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -67,7 +78,7 @@
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
 
     <CheckBox
         android:id="@+id/addInfoCheckBox"

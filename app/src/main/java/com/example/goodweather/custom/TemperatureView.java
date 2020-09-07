@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -35,24 +36,25 @@ public class TemperatureView extends View {
     // Высота элемента
     private int height;
     // Толщина градусника
-    private static int thickness;
+    private int thickness;
     // Радиус внешнего градусника
-    private static int radius;
+    private int radius;
     // Координаты отметок "0" и maximumTemperature
-    private static float markX0;
-    private static float markY0;
-    private static float markXMax;
-    private static float markYMax;
+    private float markX0;
+    private float markY0;
+    private float markXMax;
+    private float markYMax;
     //Размер шрифта отметок
-    private static float markTextSize;
+    private float markTextSize;
     // Максимальное значение температуры
-    private static double maximumTemperature;
+    private double maximumTemperature;
+    private String maxTempStr;
 
     // Константы
     // Отступ элементов
     private final static int PADDING = 5;
     // Максимальное значение температуры по умолчанию
-    private static double DEFAULT_MAXIMUM_TEMPERATURE = 40;
+    private final static double DEFAULT_MAXIMUM_TEMPERATURE = 40;
     // Толщина показателя температуры
     private final static float INNER_THICKNESS = 6f;
 
@@ -112,7 +114,7 @@ public class TemperatureView extends View {
 
         // get markTextSize
         int[] styleAttrs = {android.R.attr.textSize};
-        typedArray = context.obtainStyledAttributes(R.style.SuperSmallText, styleAttrs);
+        typedArray = context.obtainStyledAttributes(R.style.SmallText, styleAttrs);
         markTextSize = typedArray.getDimension(0, 1);
 
         // В конце работы дадим сигнал,
@@ -143,12 +145,18 @@ public class TemperatureView extends View {
 
         innerPaint.setTextSize(markTextSize);
 
+        maximumTemperature = DEFAULT_MAXIMUM_TEMPERATURE;
+        maxTempStr = String.format(Locale.getDefault(), "%d", Math.round(maximumTemperature));
         if (temperature != null) {
-            maximumTemperature = DEFAULT_MAXIMUM_TEMPERATURE;
             while (Math.abs(temperature) > maximumTemperature)
                 maximumTemperature *= 2;
-            float right =  PADDING + radius*2 + (width - PADDING *2 - radius*2 -thickness) * (float)(Math.abs(temperature)/maximumTemperature);
 
+            maxTempStr = String.format(Locale.getDefault(), "%d", Math.round(maximumTemperature));
+            if (temperature < 0) {
+                maxTempStr = "-" + maxTempStr;
+            }
+
+            float right =  PADDING + radius*2 + (width - PADDING *2 - radius*2 -thickness) * (float)(Math.abs(temperature)/maximumTemperature);
             innerPath = new Path();
             int innerRadius = (height - PADDING *2)/4;
             innerPath.addCircle(PADDING + radius, height/2.0f, innerRadius, Path.Direction.CW);
@@ -156,6 +164,7 @@ public class TemperatureView extends View {
                     right, height/2.0f + INNER_THICKNESS /2.0f,
                     Path.Direction.CW);
         }
+
     }
 
     @Override
@@ -164,7 +173,8 @@ public class TemperatureView extends View {
 
         // Получить реальные ширину и высоту
         width = w - getPaddingLeft() - getPaddingRight();
-        height = h - getPaddingTop() - getPaddingBottom();
+        int offset = (int)getResources().getDimension(R.dimen.temperature_view_offset);
+        height = h - getPaddingTop() - getPaddingBottom() - offset;
         thickness = height - PADDING *8;
         radius = (height - PADDING *2)/2;
 
@@ -179,7 +189,7 @@ public class TemperatureView extends View {
 
         // Линии отметок
         float top = height/2.0f + thickness/2.0f;
-        float bottom = height - PADDING;
+        float bottom = height + offset;
         float x0 = PADDING + radius*2.0f;
         float x1 = (width - PADDING - thickness/2.0f);
         outerPath.addRect(x0 - 2, top,  x0 + 2, bottom, Path.Direction.CCW);
@@ -187,7 +197,10 @@ public class TemperatureView extends View {
 
         markX0 = x0 + 5;
         markY0 = bottom;
-        markXMax = x1 - 30;
+        Rect rect = new Rect();
+        innerPaint.getTextBounds(maxTempStr, 0,  maxTempStr.length(), rect);
+        markXMax = x1 - rect.width() - offset;
+
         markYMax = bottom;
 
         initInnerShape();
@@ -200,8 +213,7 @@ public class TemperatureView extends View {
         canvas.drawPath(outerPath, outerPaint);
         canvas.drawPath(innerPath, innerPaint);
         canvas.drawText("0", markX0, markY0, innerPaint);
-        canvas.drawText(String.format(Locale.getDefault(), "%d", Math.round(maximumTemperature)),
-                markXMax, markYMax, innerPaint);
+        canvas.drawText(maxTempStr, markXMax, markYMax, innerPaint);
     }
 
     public void setTemperature(Integer temperature) {

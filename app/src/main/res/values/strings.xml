@@ -2,7 +2,6 @@
     <string name="app_name">GoodWeather</string>
     <string name="cityLabel">City</string>
     <string name="defaultCity">Moscow</string>
-    <string name="sunny">Sunny</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="afterTomorrow">After tomorrow</string>
     <string name="defaultCityName">Moscow</string>
@@ -53,4 +52,5 @@
     <string name="error_getting_data">data getting error</string>
     <string name="data_updating">Updating data</string>
     <string name="city_not_foud">City not found</string>
+    <string name="dots" translatable="false">...</string>
 </resources>

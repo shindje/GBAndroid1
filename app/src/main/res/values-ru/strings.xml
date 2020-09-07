@@ -3,7 +3,6 @@
     <string name="app_name">Хорошая погода!</string>
     <string name="cityLabel">Город</string>
     <string name="defaultCity">Москва</string>
-    <string name="sunny">Солнечно</string>
     <string name="tomorrow">Завтра</string>
     <string name="afterTomorrow">Послезавтра</string>
     <string name="defaultCityName">Москва</string>

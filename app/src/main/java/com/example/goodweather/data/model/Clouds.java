@@ -1,7 +1,9 @@
 package com.example.goodweather.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Clouds {
-    private int all;
+    @SerializedName("all") public int all;
 
     public int getAll() {
         return all;

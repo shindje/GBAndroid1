@@ -1,8 +1,12 @@
 package com.example.goodweather.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Weather {
-    private String main;
-    private String description;
+    @SerializedName("id") public int id;
+    @SerializedName("main") public String main;
+    @SerializedName("description") public String description;
+    @SerializedName("icon") public String icon;
 
     public String getDescription() {
         return description;
@@ -18,5 +22,13 @@ public class Weather {
 
     public void setMain(String main) {
         this.main = main;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
