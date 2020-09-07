@@ -49,8 +49,18 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_refresh_24"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_baseline_info_100"
         tools:ignore="ContentDescription" />
+
+    <ProgressBar
+        android:id="@+id/weatherIconProgressBar"
+        android:indeterminate="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/weatherDescription"

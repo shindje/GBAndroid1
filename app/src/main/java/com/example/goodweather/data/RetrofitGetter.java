@@ -35,7 +35,7 @@ public class RetrofitGetter {
 
                             Publisher.getInstance().notify(idx, data);
 
-                            if (activity != null && view != null) {
+                            if (activity != null && view != null && view.isShown()) {
                                 Snackbar.make(view, cityName + ": " + activity.getString(R.string.data_updated), Snackbar.LENGTH_SHORT)
                                         .setAction("Action", null).show();
                             }
@@ -46,7 +46,7 @@ public class RetrofitGetter {
                             }
                         } else {
                             Publisher.getInstance().notify(idx, new Data.Builder().build());
-                            if (activity != null && view != null) {
+                            if (activity != null && view != null && view.isShown()) {
                                 String error = activity.getString(R.string.city_not_foud);
 
                                 Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
@@ -59,7 +59,7 @@ public class RetrofitGetter {
                     @Override
                     public void onFailure(Call<WeatherData> call, Throwable t) {
                         Publisher.getInstance().notify(idx, new Data.Builder().build());
-                        if (activity != null && view != null) {
+                        if (activity != null && view != null && view.isShown()) {
                             String error = t.getLocalizedMessage();
 
                             Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)

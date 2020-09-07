@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,7 @@ import com.example.goodweather.data.RunnableWithData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class WeatherFragment extends Fragment implements IObserver {
     private Button updateDataButton, yandexWeatherBtn;
     private RecyclerView forecasList;
     private ImageView weatherIconView;
+    private ProgressBar weatherIconProgressBar;
 
     static WeatherFragment create(int index, String cityName, String temperature) {
         WeatherFragment fragment = new WeatherFragment();
@@ -105,6 +108,9 @@ public class WeatherFragment extends Fragment implements IObserver {
         Publisher.getInstance().subscribe(this);
         if (isVisible()) {
             getData(weatherIconView);
+        } else {
+            weatherIconProgressBar.setVisibility(View.INVISIBLE);
+            weatherIconView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -128,6 +134,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         forecasList = view.findViewById(R.id.forecast_list_view);
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescription);
         weatherIconView = view.findViewById(R.id.weatherIcon);
+        weatherIconProgressBar = view.findViewById(R.id.weatherIconProgressBar);
     }
 
     private void initList() {
@@ -174,10 +181,25 @@ public class WeatherFragment extends Fragment implements IObserver {
             windValueTextView.setText(data.getString(Converter.PARAM_WIND_SPEED_STR));
             pressureValueTextView.setText(data.getString(Converter.PARAM_PRESSURE_MM_STR));
             weatherDescriptionTextView.setText(data.getString(Converter.PARAM_DESCRIPTION));
+            weatherIconProgressBar.setVisibility(View.VISIBLE);
+            weatherIconView.setVisibility(View.INVISIBLE);
             Picasso.get()
                     .load("http://openweathermap.org/img/wn/" + data.getString(Converter.PARAM_ICON) + "@2x.png")
                     .placeholder(R.drawable.ic_baseline_refresh_24)
-                    .into(weatherIconView);
+                    .into(weatherIconView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            weatherIconProgressBar.setVisibility(View.INVISIBLE);
+                            weatherIconView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            weatherIconProgressBar.setVisibility(View.INVISIBLE);
+                            weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_info_100));
+                            weatherIconView.setVisibility(View.VISIBLE);
+                        }
+                    });
         }
     }
 
