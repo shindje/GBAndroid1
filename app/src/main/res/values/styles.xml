@@ -13,7 +13,7 @@
     <style name="SmallText">
         <item name="android:textSize">14sp</item>
     </style>
-    <style name="MiddleText">
+    <style name="MediumText">
         <item name="android:textSize">18sp</item>
     </style>
     <style name="LargeText">

@@ -1,11 +1,13 @@
 package com.example.goodweather.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Locale;
 
 public class Main {
-    private float temp;
-    private int pressure;
-    private int humidity;
+    @SerializedName("temp") public float temp;
+    @SerializedName("pressure") public int pressure;
+    @SerializedName("humidity") public int humidity;
     public static final double GPA_TO_MMRTS = 0.750064;
 
     public float getTemp() {

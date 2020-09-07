@@ -1,7 +1,6 @@
 package com.example.goodweather;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +17,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.goodweather.data.Getter;
+import com.example.goodweather.data.RetrofitGetter;
+import com.example.goodweather.data.RxWorkerGetter;
 import com.example.goodweather.settings.SettingsFragment;
 import com.example.goodweather.weather.CitySelector;
 import com.example.goodweather.weather.RecyclerAdapter;
@@ -99,8 +99,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                 .setAction("Action", null).show();
         List<String> cities = CitySelector.getCities(getResources());
         for (int i = 0; i < cities.size(); i++) {
-            //TODOGetter.updateData(new Handler(), null, cities, i, null);
-            Getter.getData(getApplicationContext(), this, cities.get(i), i,
+            RetrofitGetter.getData(getApplicationContext(), this, cities.get(i), i,
                     this, null, null);
         }
     }

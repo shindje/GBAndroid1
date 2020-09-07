@@ -22,7 +22,8 @@ import androidx.work.Data;
 import com.example.goodweather.R;
 import com.example.goodweather.custom.TemperatureView;
 import com.example.goodweather.data.Converter;
-import com.example.goodweather.data.Getter;
+import com.example.goodweather.data.RetrofitGetter;
+import com.example.goodweather.data.RunnableWithData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,8 +36,8 @@ public class WeatherFragment extends Fragment implements IObserver {
     private static String[] webCityNames;
 
     private TemperatureView temperatureView;
-    private TextView cityTextView, temperatureTextView,
-             windTextView, pressureTextView,  windValueTextView, pressureValueTextView;
+    private TextView cityTextView, temperatureTextView, windTextView, pressureTextView,
+            windValueTextView, pressureValueTextView, weatherDescriptionTextView;
     private CheckBox addInfoCheckBox;
     private Button updateDataButton, yandexWeatherBtn;
     private RecyclerView forecasList;
@@ -119,6 +120,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         pressureValueTextView = view.findViewById(R.id.pressureValueTextView);
         yandexWeatherBtn = view.findViewById(R.id.yandexWeatherBtn);
         forecasList = view.findViewById(R.id.forecast_list_view);
+        weatherDescriptionTextView = view.findViewById(R.id.weatherDescription);
     }
 
     private void initList() {
@@ -141,7 +143,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         forecasList.addItemDecoration(forecasListItemDecoration);
     }
 
-    Getter.RunnableWithData onFinishUpdateAction = new Getter.RunnableWithData() {
+    RunnableWithData onFinishUpdateAction = new RunnableWithData() {
         @Override
         public void run() {
             updateViews(data);
@@ -153,7 +155,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         updateDataButton.setOnClickListener(view -> {
             Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            Getter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
+            RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
                         getActivity(), onFinishUpdateAction, requireView());
         });
         yandexWeatherBtn.setOnClickListener(view -> {
@@ -175,6 +177,7 @@ public class WeatherFragment extends Fragment implements IObserver {
             temperatureView.setTemperature(temp == Float.MAX_VALUE ? null : Math.round(temp));
             windValueTextView.setText(data.getString(Converter.PARAM_WIND_SPEED_STR));
             pressureValueTextView.setText(data.getString(Converter.PARAM_PRESSURE_MM_STR));
+            weatherDescriptionTextView.setText(data.getString(Converter.PARAM_DESCRIPTION));
         }
     }
 

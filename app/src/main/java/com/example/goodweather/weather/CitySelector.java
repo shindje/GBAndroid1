@@ -1,12 +1,9 @@
 package com.example.goodweather.weather;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +22,7 @@ import androidx.work.Data;
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
 import com.example.goodweather.data.Converter;
-import com.example.goodweather.data.Getter;
+import com.example.goodweather.data.RetrofitGetter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
@@ -34,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class CitySelector extends Fragment implements IObserver {
     private RecyclerView citiesList;
@@ -169,7 +165,7 @@ public class CitySelector extends Fragment implements IObserver {
         Snackbar.make(view, cityName + ": " + activity.getResources().getString(R.string.data_updating),
                 Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
-        Getter.getData(activity.getApplicationContext(), lifecycleOwner, cityName, cities.size() - 1,
+        RetrofitGetter.getData(activity.getApplicationContext(), lifecycleOwner, cityName, cities.size() - 1,
                 activity, null, view);
     }
 }

@@ -1,8 +1,10 @@
 package com.example.goodweather.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Wind {
-    private float speed;
-    private int deg;
+    @SerializedName("speed") public float speed;
+    @SerializedName("deg") public int deg;
 
     public int getDeg() {
         return deg;
