@@ -128,7 +128,7 @@ public class CitySelector extends Fragment implements IObserver {
         if (isLandscape) {
             detail = (WeatherFragment)
                     getParentFragmentManager().findFragmentById(R.id.weather_fragment);
-            if (detail == null || detail.getIndex() != index) {
+            if (detail == null || detail.getIndex() != index || !detail.isVisible()) {
                 detail = WeatherFragment.create(index, cities.get(index), temperatures.get(index));
 
                 FragmentTransaction ft = getParentFragmentManager().beginTransaction();
