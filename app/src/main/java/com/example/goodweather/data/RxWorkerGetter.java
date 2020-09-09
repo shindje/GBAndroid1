@@ -62,7 +62,8 @@ public class RxWorkerGetter extends RxWorker {
     }
 
     public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName, int idx,
-                                Activity activity, RunnableWithData onFinishAction, View view) {
+                                Activity activity, RunnableWithData onOkAction, RunnableWithData onErrorAction,
+                               View view) {
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
@@ -93,9 +94,9 @@ public class RxWorkerGetter extends RxWorker {
                             Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                         }
-                        if (onFinishAction != null && activity != null) {
-                            onFinishAction.setData(outputData);
-                            activity.runOnUiThread(onFinishAction);
+                        if (onErrorAction != null && activity != null) {
+                            onErrorAction.setData(outputData);
+                            activity.runOnUiThread(onErrorAction);
                         }
                     }
                 });
@@ -115,18 +116,17 @@ public class RxWorkerGetter extends RxWorker {
                                 Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
                                         .setAction("Action", null).show();
                             }
+                            if (onErrorAction != null && activity != null) {
+                                onErrorAction.setData(outputData);
+                                activity.runOnUiThread(onErrorAction);
+                            }
                         }
                         if (info.getState() == WorkInfo.State.SUCCEEDED) {
                             Publisher.getInstance().notify(idx, outputData);
-
-                            if (activity != null && view != null) {
-                                Snackbar.make(view, cityName + ": " + activity.getString(R.string.data_updated), Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
+                            if (onOkAction != null && activity != null) {
+                                onOkAction.setData(outputData);
+                                activity.runOnUiThread(onOkAction);
                             }
-                        }
-                        if (onFinishAction != null && activity != null) {
-                            onFinishAction.setData(outputData);
-                            activity.runOnUiThread(onFinishAction);
                         }
                     }
                 });
