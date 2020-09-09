@@ -106,11 +106,8 @@ public class WeatherFragment extends Fragment implements IObserver {
     public void onResume() {
         super.onResume();
         Publisher.getInstance().subscribe(this);
-        if (isVisible()) {
+        if (!isHidden()) {
             getData(weatherIconView);
-        } else {
-            weatherIconProgressBar.setVisibility(View.INVISIBLE);
-            weatherIconView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -183,9 +180,9 @@ public class WeatherFragment extends Fragment implements IObserver {
             weatherDescriptionTextView.setText(data.getString(Converter.PARAM_DESCRIPTION));
             weatherIconProgressBar.setVisibility(View.VISIBLE);
             weatherIconView.setVisibility(View.INVISIBLE);
+            weatherIconView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Picasso.get()
-                    .load("http://openweathermap.org/img/wn/" + data.getString(Converter.PARAM_ICON) + "@2x.png")
-                    .placeholder(R.drawable.ic_baseline_refresh_24)
+                    .load("http://openweathermap.org/img/wn/" + data.getString(Converter.PARAM_ICON) + "@4x.png")
                     .into(weatherIconView, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -196,7 +193,8 @@ public class WeatherFragment extends Fragment implements IObserver {
                         @Override
                         public void onError(Exception e) {
                             weatherIconProgressBar.setVisibility(View.INVISIBLE);
-                            weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_info_100));
+                            weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_info_50));
+                            weatherIconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                             weatherIconView.setVisibility(View.VISIBLE);
                         }
                     });
@@ -226,17 +224,24 @@ public class WeatherFragment extends Fragment implements IObserver {
         }
     }
 
-    RunnableWithData onFinishUpdateAction = new RunnableWithData() {
+    RunnableWithData onUpdateDataAction = new RunnableWithData() {
         @Override
         public void run() {
             updateViews(data);
         }
     };
+    RunnableWithData onUpdateErrorAction = new RunnableWithData() {
+        @Override
+        public void run() {
+            weatherIconProgressBar.setVisibility(View.INVISIBLE);
+            weatherIconView.setVisibility(View.VISIBLE);
+        }
+    };
 
     private void getData(View view) {
-        Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_LONG)
+        Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
         RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
-                getActivity(), onFinishUpdateAction, requireView());
+                getActivity(), onUpdateDataAction, onUpdateErrorAction, requireView());
     }
 }

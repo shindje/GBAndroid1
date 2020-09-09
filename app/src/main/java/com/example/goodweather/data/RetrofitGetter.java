@@ -23,7 +23,8 @@ import retrofit2.Response;
 
 public class RetrofitGetter {
     public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName, int idx,
-                               Activity activity, RunnableWithData onFinishAction, View view) {
+                               Activity activity, RunnableWithData onOkAction, RunnableWithData onErrorAction,
+                               View view) {
         OpenWeatherRepo.getInstance().getAPI().loadWeather(cityName,
                 BuildConfig.WEATHER_API_KEY, "metric", Locale.getDefault().getLanguage())
                 .enqueue(new Callback<WeatherData>() {
@@ -35,14 +36,9 @@ public class RetrofitGetter {
 
                             Publisher.getInstance().notify(idx, data);
 
-                            if (activity != null && view != null && view.isShown()) {
-                                Snackbar.make(view, cityName + ": " + activity.getString(R.string.data_updated), Snackbar.LENGTH_SHORT)
-                                        .setAction("Action", null).show();
-                            }
-
-                            if (onFinishAction != null) {
-                                onFinishAction.setData(data);
-                                activity.runOnUiThread(onFinishAction);
+                            if (onOkAction != null && activity != null) {
+                                onOkAction.setData(data);
+                                activity.runOnUiThread(onOkAction);
                             }
                         } else {
                             Publisher.getInstance().notify(idx, new Data.Builder().build());
@@ -51,6 +47,10 @@ public class RetrofitGetter {
 
                                 Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
                                         .setAction("Action", null).show();
+                            }
+                            if (onErrorAction != null && activity != null) {
+                                onErrorAction.setData(null);
+                                activity.runOnUiThread(onErrorAction);
                             }
                         }
                     }
@@ -64,6 +64,10 @@ public class RetrofitGetter {
 
                             Snackbar.make(view, cityName + ": " + activity.getString(R.string.error_getting_data) + ": " + error, Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
+                        }
+                        if (onErrorAction != null && activity != null) {
+                            onErrorAction.setData(null);
+                            activity.runOnUiThread(onErrorAction);
                         }
                     }
                 });

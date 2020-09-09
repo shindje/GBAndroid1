@@ -163,9 +163,9 @@ public class CitySelector extends Fragment implements IObserver {
         temperatures.add(temperature);
         adapter.notifyDataSetChanged();
         Snackbar.make(view, cityName + ": " + activity.getResources().getString(R.string.data_updating),
-                Snackbar.LENGTH_LONG)
+                Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
         RetrofitGetter.getData(activity.getApplicationContext(), lifecycleOwner, cityName, cities.size() - 1,
-                activity, null, view);
+                activity, null, null, view);
     }
 }

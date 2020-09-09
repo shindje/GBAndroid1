@@ -94,12 +94,12 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     public void getFullData() {
-        Snackbar.make(toolbar, getString(R.string.data_updating), Snackbar.LENGTH_LONG)
+        Snackbar.make(toolbar, getString(R.string.data_updating), Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
         List<String> cities = CitySelector.getCities(getResources());
         for (int i = 0; i < cities.size(); i++) {
             RetrofitGetter.getData(getApplicationContext(), this, cities.get(i), i,
-                    this, null, null);
+                    this, null, null,null);
         }
     }
 
