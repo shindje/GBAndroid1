@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     private RecyclerAdapter adapter;
     private NavigationView navigationView;
     private DrawerLayout drawer;
+    private static CitySelector citySelector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,8 +174,9 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     private void setCitySelectorFragment() {
-        CitySelector fragment = new CitySelector();
-        setFragment(fragment);
+        if (citySelector == null)
+            citySelector = new CitySelector();
+        setFragment(citySelector);
     }
 
     private void setSetingsFragment() {
