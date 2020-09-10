@@ -24,16 +24,15 @@ import androidx.work.Data;
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
 import com.example.goodweather.custom.TemperatureView;
-import com.example.goodweather.data.Converter;
-import com.example.goodweather.data.RetrofitGetter;
-import com.example.goodweather.data.RunnableWithData;
+import com.example.goodweather.data.web.Converter;
+import com.example.goodweather.data.web.RetrofitGetter;
+import com.example.goodweather.data.web.RunnableWithData;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,7 +80,6 @@ public class WeatherFragment extends Fragment implements IObserver {
         setViewsVisible();
         cityTextView.setText(getCityName());
         temperatureTextView.setText(((MainActivity)requireActivity()).getDefaultTemperature());
-        //TODO temperatureView.setTemperature(null);
         webCityNames = getResources().getStringArray(R.array.web_city_names);
     }
 
@@ -124,9 +122,10 @@ public class WeatherFragment extends Fragment implements IObserver {
 
         forecasList.setLayoutManager(layoutManager);
         List<String> forecastItems = Arrays.asList(getResources().getStringArray(R.array.forecast_items));
-        RecyclerAdapter forecasListAdapter = new RecyclerAdapter(forecastItems, null,
-                R.layout.forecast_item, (MainActivity) getActivity());
-        forecasList.setAdapter(forecasListAdapter);
+        //TODO
+//        RecyclerAdapter forecasListAdapter = new RecyclerAdapter(forecastItems, null,
+//                R.layout.forecast_item, (MainActivity) getActivity());
+//        forecasList.setAdapter(forecasListAdapter);
 
         DividerItemDecoration forecasListItemDecoration = new DividerItemDecoration(requireActivity().getBaseContext(),
                 LinearLayout.VERTICAL);
@@ -213,6 +212,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         @Override
         public void run() {
             updateViews(data);
+            ((MainActivity)requireActivity()).addHistory(getCityName(), data.getString(Converter.PARAM_TEMP_STR));
         }
     };
     RunnableWithData onUpdateErrorAction = new RunnableWithData() {

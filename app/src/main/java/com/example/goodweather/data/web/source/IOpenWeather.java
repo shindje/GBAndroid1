@@ -1,6 +1,6 @@
-package com.example.goodweather.data.source;
+package com.example.goodweather.data.web.source;
 
-import com.example.goodweather.data.model.WeatherData;
+import com.example.goodweather.data.web.model.WeatherData;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

@@ -1,4 +1,4 @@
-package com.example.goodweather.data;
+package com.example.goodweather.data.web;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,8 +10,8 @@ import androidx.work.Data;
 
 import com.example.goodweather.BuildConfig;
 import com.example.goodweather.R;
-import com.example.goodweather.data.model.WeatherData;
-import com.example.goodweather.data.source.OpenWeatherRepo;
+import com.example.goodweather.data.web.model.WeatherData;
+import com.example.goodweather.data.web.source.OpenWeatherRepo;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
 

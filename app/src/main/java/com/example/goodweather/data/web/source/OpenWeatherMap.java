@@ -1,4 +1,4 @@
-package com.example.goodweather.data.source;
+package com.example.goodweather.data.web.source;
 
 import com.example.goodweather.BuildConfig;
 import java.io.BufferedReader;

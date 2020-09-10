@@ -1,4 +1,4 @@
-package com.example.goodweather.data;
+package com.example.goodweather.data.web;
 
 import android.content.Context;
 
@@ -7,7 +7,7 @@ import androidx.work.Data;
 import androidx.work.RxWorker;
 import androidx.work.WorkerParameters;
 
-import com.example.goodweather.data.model.WeatherData;
+import com.example.goodweather.data.web.model.WeatherData;
 import com.google.gson.Gson;
 
 import io.reactivex.Single;
@@ -15,7 +15,7 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.example.goodweather.data.Converter.convert;
+import static com.example.goodweather.data.web.Converter.convert;
 
 public class RxWorkerConverter extends RxWorker {
     public RxWorkerConverter(@NonNull Context context, @NonNull WorkerParameters workerParams) {

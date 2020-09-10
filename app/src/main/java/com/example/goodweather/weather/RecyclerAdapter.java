@@ -1,6 +1,5 @@
 package com.example.goodweather.weather;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,24 +10,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
+import com.example.goodweather.data.db.CityHistorySource;
+import com.example.goodweather.data.db.model.CityHistory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private List<String> data1;
-    private List<String> data2;
     private IRVOnItemClick onItemClickCallback;
     private int itemLayoutId;
     private MainActivity activity;
     private int itemIndexFromMenu;
+    // Источник данных
+    private CityHistorySource dataSource;
 
-    public RecyclerAdapter(List<String> data1, IRVOnItemClick onItemClickCallback, int itemLayoutId, MainActivity activity) {
-        this.data1 = data1;
-        data2 = new ArrayList<>(data1.size());
-        for (int i = 0; i < data1.size(); i++) {
-            data2.add(activity.getDefaultTemperature());
-        }
+    public RecyclerAdapter(CityHistorySource dataSource, IRVOnItemClick onItemClickCallback, int itemLayoutId, MainActivity activity) {
+        this.dataSource = dataSource;
         this.onItemClickCallback = onItemClickCallback;
         this.itemLayoutId = itemLayoutId;
         this.activity = activity;
@@ -44,95 +40,113 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String text1 = data1.get(position);
-        holder.setTextToTextView1(text1);
-        String text2 = data2.get(position);
-        holder.setTextToTextView2(text2);
+        // Заполняем данными записи на экране
+        List<CityHistory> historyList = dataSource.getFullHistory();
+        CityHistory history = historyList.get(position);
+        holder.setCityNameText(history.cityName);
+        holder.setDateText(history.getDateText());
+        holder.setTimeText(history.getTimeText());
+        holder.setTemperatureText("" + history.temperature);
         holder.setOnClickForItem(position);
 
-        TextView textView1 = holder.getTextView1();
-        TextView textView2 = holder.getTextView2();
 
         // Определяем текущую позицию в списке
-        textView1.setOnLongClickListener(new View.OnLongClickListener() {
+        View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 itemIndexFromMenu = position;
                 return false;
             }
-        });
-        textView2.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                itemIndexFromMenu = position;
-                return false;
-            }
-        });
+        };
 
+        TextView cityNameTextView = holder.getCityNameTextView();
+        cityNameTextView.setOnLongClickListener(onLongClickListener);
+        TextView dateTextView = holder.getDateTextView();
+        dateTextView.setOnLongClickListener(onLongClickListener);
+        TextView timeTextView = holder.getTimeTextView();
+        timeTextView.setOnLongClickListener(onLongClickListener);
+        TextView temperatureTextView = holder.getTemperatureTextView();
+        temperatureTextView.setOnLongClickListener(onLongClickListener);
 
         if (activity != null){
-            activity.registerForContextMenu(textView1);
-            activity.registerForContextMenu(textView2);
+            activity.registerForContextMenu(cityNameTextView);
+            activity.registerForContextMenu(dateTextView);
+            activity.registerForContextMenu(timeTextView);
+            activity.registerForContextMenu(temperatureTextView);
         }
     }
 
     @Override
     public int getItemCount() {
-        return data1 == null ? 0 : data1.size();
+        return (int)dataSource.getCountHistory();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textView1;
-        private TextView textView2;
+        private TextView cityNameTextView;
+        private TextView dateTextView;
+        private TextView timeTextView;
+        private TextView temperatureTextView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textView1 = itemView.findViewById(R.id.textView1);
-            textView2  = itemView.findViewById(R.id.textView2);
+            cityNameTextView = itemView.findViewById(R.id.cityNameTextView);
+            dateTextView  = itemView.findViewById(R.id.dateTextView);
+            timeTextView  = itemView.findViewById(R.id.timeTextView);
+            temperatureTextView  = itemView.findViewById(R.id.temperatureTextView);
         }
 
-        void setTextToTextView1(String text) {
-            textView1.setText(text);
+        void setCityNameText(String text) {
+            cityNameTextView.setText(text);
         }
-
-        void setTextToTextView2(String text) {
-            textView2.setText(text);
+        void setDateText(String text) {
+            dateTextView.setText(text);
+        }
+        void setTimeText(String text) {
+            timeTextView.setText(text);
+        }
+        void setTemperatureText(String text) {
+            temperatureTextView.setText(text);
         }
 
         void setOnClickForItem(int position) {
-            textView1.setOnClickListener(new View.OnClickListener() {
+            View.OnClickListener onClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if(onItemClickCallback != null) {
-                        onItemClickCallback.onItemClicked(data1.get(position));
+                        onItemClickCallback.onItemClicked(dataSource.getFullHistory().get(position).cityName);
                     }
                 }
-            });
+            };
 
-            textView2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(onItemClickCallback != null) {
-                        onItemClickCallback.onItemClicked(data1.get(position));
-                    }
-                }
-            });
+            cityNameTextView.setOnClickListener(onClickListener);
+            dateTextView.setOnClickListener(onClickListener);
+            timeTextView.setOnClickListener(onClickListener);
+            temperatureTextView.setOnClickListener(onClickListener);
         }
 
-        public TextView getTextView1() {
-            return textView1;
+        public TextView getCityNameTextView() {
+            return cityNameTextView;
         }
-
-        public void setTextView1(TextView textView1) {
-            this.textView1 = textView1;
+        public void setCityNameTextView(TextView cityNameTextView) {
+            this.cityNameTextView = cityNameTextView;
         }
-
-        public TextView getTextView2() {
-            return textView2;
+        public TextView getDateTextView() {
+            return dateTextView;
         }
-
-        public void setTextView2(TextView textView2) {
-            this.textView2 = textView2;
+        public void setDateTextView(TextView dateTextView) {
+            this.dateTextView = dateTextView;
+        }
+        public TextView getTimeTextView() {
+            return timeTextView;
+        }
+        public void setTimeTextView(TextView timeTextView) {
+            this.timeTextView = timeTextView;
+        }
+        public TextView getTemperatureTextView() {
+            return temperatureTextView;
+        }
+        public void setTemperatureTextView(TextView temperatureTextView) {
+            this.temperatureTextView = temperatureTextView;
         }
     }
 
@@ -141,14 +155,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     public void remove(int posititon) {
-        data1.remove(posititon);
-        data2.remove(posititon);
+        //TODO
+        //data1.remove(posititon);
+        //data2.remove(posititon);
+        //dataSource.removeHistory();
         notifyItemRemoved(posititon);
     }
 
     public void add(String cityName) {
-        data1.add(cityName);
-        data2.add(activity.getDefaultTemperature());
-        notifyItemInserted(data1.size() - 1);
+        //TODO
+        //data1.add(cityName);
+        //data2.add(activity.getDefaultTemperature());
+        //notifyItemInserted(data1.size() - 1);
     }
 }

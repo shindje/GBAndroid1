@@ -18,7 +18,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.goodweather.data.RetrofitGetter;
+import com.example.goodweather.data.db.App;
+import com.example.goodweather.data.db.CityHistoryDao;
+import com.example.goodweather.data.db.CityHistorySource;
+import com.example.goodweather.data.db.model.CityHistory;
+import com.example.goodweather.data.web.RetrofitGetter;
 import com.example.goodweather.settings.SettingsFragment;
 import com.example.goodweather.weather.CitySelector;
 import com.example.goodweather.weather.RecyclerAdapter;
@@ -28,9 +32,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.sql.Time;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity implements CityBottomSheetDialog.BottomSheetListener{
     private Toolbar toolbar;
-    private RecyclerAdapter adapter;
+    private RecyclerAdapter adapter = null;
+    private CityHistorySource cityHistorySource;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private static CitySelector citySelector;
@@ -121,9 +129,12 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                 v -> {
                     EditText editText = contentView.findViewById(R.id.editText);
                     if (validateCityEditText(editText)) {
-                        CitySelector.addCity(this, this, editText.getText().toString(),
-                                toolbar, adapter);
+                        String cityName = editText.getText().toString();
+                        CitySelector.addCity(this, this, cityName,
+                                toolbar, getAdapter());
                         alert.dismiss();
+                        citySelector.setCityName(cityName);
+                        setWeatherFragment();
                     }
                 }
         );
@@ -155,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         int id = item.getItemId();
         if (id == R.id.delete_context) {
             final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
-            CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(adapter.getItemIndexFromMenu()));
+            CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(getAdapter().getItemIndexFromMenu()));
             dialog.show(getSupportFragmentManager(), "Диалог удаления города");
         }
         return super.onContextItemSelected(item);
@@ -168,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     @Override
     public void onBottomClicked(int code) {
         if (code == CityBottomSheetDialog.OK_CODE) {
-            CitySelector.deleteCity(adapter.getItemIndexFromMenu(), adapter);
+            CitySelector.deleteCity(getAdapter().getItemIndexFromMenu(), getAdapter());
         }
     }
 
@@ -186,6 +197,21 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(SHARED_PREF_LAST_CITY, cityName);
         editor.apply();
+    }
+
+    public void addHistory(String cityName, String temperature) {
+        CityHistory history = new CityHistory();
+        history.cityName = cityName;
+        Date date = new Date();
+        history.date = date;
+        history.time = new Time(date.getTime());
+        try {
+            history.temperature = Integer.parseInt(temperature);
+        } catch (Exception e) {
+
+        }
+        getCityHistorySource().addHistory(history);
+        getAdapter().notifyDataSetChanged();
     }
 
     public void setWeatherFragment() {
@@ -255,5 +281,27 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         fragmentTransaction.replace(R.id.fragmentContainer, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    RecyclerAdapter getAdapter() {
+        if (adapter == null) {
+            adapter = new RecyclerAdapter(getCityHistorySource(), null, R.layout.city_item, this);
+        }
+        return adapter;
+    }
+
+    CityHistorySource getCityHistorySource() {
+        if (cityHistorySource == null) {
+            CityHistoryDao dao = App
+                    .getInstance()
+                    .getCityHistoryDao();
+            cityHistorySource = new CityHistorySource(dao);
+
+        }
+        return cityHistorySource;
+    }
+
+    public void setCityHistorySource(CityHistorySource cityHistorySource) {
+        this.cityHistorySource = cityHistorySource;
     }
 }

@@ -50,6 +50,8 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.4.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.0.5'
     implementation 'androidx.work:work-rxjava2:2.4.0'
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

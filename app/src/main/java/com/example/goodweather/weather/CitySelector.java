@@ -20,7 +20,10 @@ import androidx.work.Data;
 
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
-import com.example.goodweather.data.RetrofitGetter;
+import com.example.goodweather.data.db.App;
+import com.example.goodweather.data.db.CityHistoryDao;
+import com.example.goodweather.data.db.CityHistorySource;
+import com.example.goodweather.data.web.RetrofitGetter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,6 +38,7 @@ public class CitySelector extends Fragment implements IObserver {
     private String cityName;
     private boolean isLandscape;
     private RecyclerAdapter adapter;
+    private CityHistorySource cityHistorySource;
     private static List<String> cities;
 
     @Override
@@ -100,9 +104,14 @@ public class CitySelector extends Fragment implements IObserver {
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity().getBaseContext(),
                 isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
         citiesList.setLayoutManager(layoutManager);
-        adapter = new RecyclerAdapter(cities, cityListOnClick, R.layout.city_item, (MainActivity) getActivity());
+        CityHistoryDao dao = App
+                .getInstance()
+                .getCityHistoryDao();
+        cityHistorySource = new CityHistorySource(dao);
+        adapter = new RecyclerAdapter(cityHistorySource, cityListOnClick, R.layout.city_item, (MainActivity) getActivity());
         citiesList.setAdapter(adapter);
         ((MainActivity) requireActivity()).setAdapter(adapter);
+        ((MainActivity) requireActivity()).setCityHistorySource(cityHistorySource);
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(requireActivity().getBaseContext(),
                 isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);

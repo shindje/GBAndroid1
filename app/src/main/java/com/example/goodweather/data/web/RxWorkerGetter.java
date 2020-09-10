@@ -1,4 +1,4 @@
-package com.example.goodweather.data;
+package com.example.goodweather.data.web;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +16,7 @@ import androidx.work.WorkManager;
 import androidx.work.WorkerParameters;
 
 import com.example.goodweather.R;
-import com.example.goodweather.data.source.OpenWeatherMap;
+import com.example.goodweather.data.web.source.OpenWeatherMap;
 import com.example.goodweather.observer.Publisher;
 import com.google.android.material.snackbar.Snackbar;
 
