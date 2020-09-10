@@ -32,6 +32,6 @@ public class CityHistory {
         if (time == null)
             return "";
         else
-            return " " + new SimpleDateFormat("HH:mm").format(time);
+            return "  " + new SimpleDateFormat("HH:mm").format(time);
     }
 }

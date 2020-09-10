@@ -101,8 +101,10 @@ public class CitySelector extends Fragment implements IObserver {
             ((MainActivity)requireActivity()).setWeatherFragment();
         };
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity().getBaseContext(),
-                isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(
+                requireActivity().getBaseContext(),
+                LinearLayoutManager.VERTICAL,
+                false);
         citiesList.setLayoutManager(layoutManager);
         CityHistoryDao dao = App
                 .getInstance()
@@ -113,8 +115,10 @@ public class CitySelector extends Fragment implements IObserver {
         ((MainActivity) requireActivity()).setAdapter(adapter);
         ((MainActivity) requireActivity()).setCityHistorySource(cityHistorySource);
 
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(requireActivity().getBaseContext(),
-                isLandscape? LinearLayout.HORIZONTAL: LinearLayout.VERTICAL);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(
+                requireActivity().getBaseContext(),
+                LinearLayout.HORIZONTAL
+        );
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.city_item_separator));
         citiesList.addItemDecoration(itemDecoration);
     }
