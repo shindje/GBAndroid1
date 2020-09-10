@@ -22,10 +22,10 @@
         android:layout_width="100dp"
         android:layout_height="35dp"
         android:layout_marginStart="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/temperature"
+        app:layout_constraintBottom_toBottomOf="@+id/weatherIcon"
         app:layout_constraintEnd_toStartOf="@+id/temperature"
         app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toTopOf="@+id/temperature" />
+        app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
 
     <TextView
         android:id="@+id/temperature"
@@ -35,9 +35,10 @@
         android:layout_marginStart="16dp"
         android:text="@string/default_temperature"
         android:textColor="@color/colorTemperature"
+        app:layout_constraintBottom_toBottomOf="@+id/temperatureView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/temperatureView"
-        app:layout_constraintTop_toTopOf="@+id/weatherIcon" />
+        app:layout_constraintTop_toTopOf="@+id/temperatureView" />
 
     <ImageView
         android:id="@+id/weatherIcon"
@@ -66,12 +67,11 @@
         style="@style/MediumText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/dots"
         android:textColor="@color/design_default_color_secondary_variant"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/weatherIcon"
-        app:layout_constraintTop_toBottomOf="@+id/temperature" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/forecast_list_view"
@@ -80,7 +80,7 @@
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+        app:layout_constraintTop_toBottomOf="@+id/weatherDescription" />
 
     <CheckBox
         android:id="@+id/addInfoCheckBox"

@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,7 +20,6 @@ import androidx.work.Data;
 
 import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
-import com.example.goodweather.data.Converter;
 import com.example.goodweather.data.RetrofitGetter;
 import com.example.goodweather.observer.IObserver;
 import com.example.goodweather.observer.Publisher;
@@ -34,11 +32,10 @@ import java.util.List;
 
 public class CitySelector extends Fragment implements IObserver {
     private RecyclerView citiesList;
-    private int index = 0;
+    private String cityName;
     private boolean isLandscape;
     private RecyclerAdapter adapter;
     private static List<String> cities;
-    private static List<String> temperatures;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,12 +57,6 @@ public class CitySelector extends Fragment implements IObserver {
             cities = new ArrayList<>();
             cities.addAll(Arrays.asList(getResources().getStringArray(R.array.cities)));
         }
-        if (temperatures == null) {
-            temperatures = new ArrayList<>();
-            for (int i = 0; i < cities.size(); i++) {
-                temperatures.add(getString(R.string.default_temperature));
-            }
-        }
         isLandscape = getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE;
         initList();
@@ -76,11 +67,7 @@ public class CitySelector extends Fragment implements IObserver {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            index = savedInstanceState.getInt("index", 0);
-        }
-
-        if (isLandscape) {
-            showWeather();
+            cityName = savedInstanceState.getString("cityName", getDefaultCityName());
         }
 
         Publisher.getInstance().subscribe(this);
@@ -93,7 +80,7 @@ public class CitySelector extends Fragment implements IObserver {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt("index", index);
+        outState.putString("cityName", cityName);
         super.onSaveInstanceState(outState);
     }
 
@@ -105,15 +92,15 @@ public class CitySelector extends Fragment implements IObserver {
     }
 
     private void initList() {
-        IRVOnItemClick cityListOnClick = position -> {
-            index = position;
-            showWeather();
+        IRVOnItemClick cityListOnClick = cityName -> {
+            this.cityName = cityName;
+            ((MainActivity)requireActivity()).setWeatherFragment();
         };
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireActivity().getBaseContext(),
                 isLandscape? LinearLayoutManager.HORIZONTAL: LinearLayoutManager.VERTICAL, false);
         citiesList.setLayoutManager(layoutManager);
-        adapter = new RecyclerAdapter(cities, temperatures, cityListOnClick, R.layout.city_item, getActivity());
+        adapter = new RecyclerAdapter(cities, cityListOnClick, R.layout.city_item, (MainActivity) getActivity());
         citiesList.setAdapter(adapter);
         ((MainActivity) requireActivity()).setAdapter(adapter);
 
@@ -123,30 +110,9 @@ public class CitySelector extends Fragment implements IObserver {
         citiesList.addItemDecoration(itemDecoration);
     }
 
-    private void showWeather() {
-        WeatherFragment detail;
-        if (isLandscape) {
-            detail = (WeatherFragment)
-                    getParentFragmentManager().findFragmentById(R.id.weather_fragment);
-            if (detail == null || detail.getIndex() != index || !detail.isVisible()) {
-                detail = WeatherFragment.create(index, cities.get(index), temperatures.get(index));
-
-                FragmentTransaction ft = getParentFragmentManager().beginTransaction();
-                ft.replace(R.id.weather_fragment, detail);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.addToBackStack(null);
-                ft.commit();
-            }
-        } else {
-            detail = WeatherFragment.create(index, cities.get(index), temperatures.get(index));
-            ((MainActivity) requireActivity()).setFragment(detail);
-        }
-    }
-
     @Override
-    public void updateData(Integer idx, Data data) {
-        temperatures.set(idx, data.getString(Converter.PARAM_TEMP_STR));
-        adapter.notifyItemChanged(idx);
+    public void updateData(String cityName, Data data) {
+        adapter.notifyDataSetChanged();
     }
 
     public static List<String> getCities(Resources resources) {
@@ -158,20 +124,31 @@ public class CitySelector extends Fragment implements IObserver {
     }
 
     public static void deleteCity(int index, RecyclerAdapter adapter) {
-        cities.remove(index);
-        temperatures.remove(index);
-        adapter.notifyDataSetChanged();
+        adapter.remove(index);
     }
 
     public static void addCity(Activity activity, LifecycleOwner lifecycleOwner, String cityName,
-                               String temperature, View view, RecyclerAdapter adapter) {
-        cities.add(cityName);
-        temperatures.add(temperature);
-        adapter.notifyDataSetChanged();
+                               View view, RecyclerAdapter adapter) {
+        adapter.add(cityName);
         Snackbar.make(view, cityName + ": " + activity.getResources().getString(R.string.data_updating),
                 Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
-        RetrofitGetter.getData(activity.getApplicationContext(), lifecycleOwner, cityName, cities.size() - 1,
+        RetrofitGetter.getData(activity.getApplicationContext(), lifecycleOwner, cityName,
                 activity, null, null, view);
+    }
+
+    private String getDefaultCityName() {
+        if (getActivity() != null) {
+            return ((MainActivity)getActivity()).getDefaultCityName();
+        } else
+            return null;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 }

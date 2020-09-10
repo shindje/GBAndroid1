@@ -61,7 +61,7 @@ public class RxWorkerGetter extends RxWorker {
         }
     }
 
-    public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName, int idx,
+    public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName,
                                 Activity activity, RunnableWithData onOkAction, RunnableWithData onErrorAction,
                                View view) {
         Constraints constraints = new Constraints.Builder()
@@ -84,7 +84,7 @@ public class RxWorkerGetter extends RxWorker {
                     Data outputData = info.getOutputData();
 
                     if (info.getState() == WorkInfo.State.FAILED) {
-                        Publisher.getInstance().notify(idx, outputData);
+                        Publisher.getInstance().notify(cityName, outputData);
 
                         if (activity != null && view != null) {
                             String error = outputData.getString("error");
@@ -107,7 +107,7 @@ public class RxWorkerGetter extends RxWorker {
                     if (info.getRunAttemptCount() > 0) {
                         Data outputData = info.getOutputData();
                         if (info.getState() == WorkInfo.State.FAILED) {
-                            Publisher.getInstance().notify(idx, outputData);
+                            Publisher.getInstance().notify(cityName, outputData);
 
                             if (activity != null && view != null) {
                                 String error = outputData.getString("error");
@@ -122,7 +122,7 @@ public class RxWorkerGetter extends RxWorker {
                             }
                         }
                         if (info.getState() == WorkInfo.State.SUCCEEDED) {
-                            Publisher.getInstance().notify(idx, outputData);
+                            Publisher.getInstance().notify(cityName, outputData);
                             if (onOkAction != null && activity != null) {
                                 onOkAction.setData(outputData);
                                 activity.runOnUiThread(onOkAction);

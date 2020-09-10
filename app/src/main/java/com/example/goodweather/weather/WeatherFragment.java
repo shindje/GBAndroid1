@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
 
+import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
 import com.example.goodweather.custom.TemperatureView;
 import com.example.goodweather.data.Converter;
@@ -48,36 +49,18 @@ public class WeatherFragment extends Fragment implements IObserver {
     private ImageView weatherIconView;
     private ProgressBar weatherIconProgressBar;
 
-    static WeatherFragment create(int index, String cityName, String temperature) {
+    public static WeatherFragment create(String cityName) {
         WeatherFragment fragment = new WeatherFragment();
 
         Bundle args = new Bundle();
-        args.putInt("index", index);
         args.putString("cityName", cityName);
-        args.putString("temperature", temperature);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    int getIndex() {
-        try {
-            return requireArguments().getInt("index", 0);
-        } catch (Exception e) {
-            return 0;
-        }
     }
 
     String getCityName() {
         try {
             return requireArguments().getString("cityName", "");
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    String getTemperature() {
-        try {
-            return requireArguments().getString("temperature", "");
         } catch (Exception e) {
             return "";
         }
@@ -97,8 +80,8 @@ public class WeatherFragment extends Fragment implements IObserver {
         setOnClickListeners();
         setViewsVisible();
         cityTextView.setText(getCityName());
-        temperatureTextView.setText(getTemperature());
-        temperatureView.setTemperature(getTemperature());
+        temperatureTextView.setText(((MainActivity)requireActivity()).getDefaultTemperature());
+        //TODO temperatureView.setTemperature(null);
         webCityNames = getResources().getStringArray(R.array.web_city_names);
     }
 
@@ -107,6 +90,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         super.onResume();
         Publisher.getInstance().subscribe(this);
         if (!isHidden()) {
+            ((MainActivity)requireActivity()).setLastCityName(getCityName());
             getData(weatherIconView);
         }
     }
@@ -140,12 +124,8 @@ public class WeatherFragment extends Fragment implements IObserver {
 
         forecasList.setLayoutManager(layoutManager);
         List<String> forecastItems = Arrays.asList(getResources().getStringArray(R.array.forecast_items));
-        List<String> forecastValues = new ArrayList<>();
-        for (int i = 0; i < forecastItems.size(); i++) {
-            forecastValues.add(WeatherFragment.getRandomTemperature());
-        }
-        RecyclerAdapter forecasListAdapter = new RecyclerAdapter(forecastItems,
-                forecastValues, null, R.layout.forecast_item, getActivity());
+        RecyclerAdapter forecasListAdapter = new RecyclerAdapter(forecastItems, null,
+                R.layout.forecast_item, (MainActivity) getActivity());
         forecasList.setAdapter(forecasListAdapter);
 
         DividerItemDecoration forecasListItemDecoration = new DividerItemDecoration(requireActivity().getBaseContext(),
@@ -210,16 +190,21 @@ public class WeatherFragment extends Fragment implements IObserver {
     }
 
     private String getCityforURL() {
-        int index = getIndex();
-        if (index < webCityNames.length)
+        int index = -1;
+        List<String> cities = CitySelector.getCities(getResources());
+        for (int i = 0; i < cities.size(); i++) {
+            if (cities.get(i).equals(getCityName()))
+                index = i;
+        }
+        if (index > -1 && index < webCityNames.length)
             return webCityNames[index];
         else
             return "";
     }
 
     @Override
-    public void updateData(Integer idx, Data data) {
-        if (idx == getIndex()) {
+    public void updateData(String cityName, Data data) {
+        if (cityName.equals(getCityName())) {
             updateViews(data);
         }
     }
@@ -241,7 +226,7 @@ public class WeatherFragment extends Fragment implements IObserver {
     private void getData(View view) {
         Snackbar.make(view, getCityName() + ": " + getString(R.string.data_updating), Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
-        RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), getIndex(),
+        RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(),
                 getActivity(), onUpdateDataAction, onUpdateErrorAction, requireView());
     }
 }

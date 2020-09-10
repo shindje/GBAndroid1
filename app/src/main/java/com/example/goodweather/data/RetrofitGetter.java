@@ -22,7 +22,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RetrofitGetter {
-    public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName, int idx,
+    public static void getData(Context context, LifecycleOwner lifecycleOwner, String cityName,
                                Activity activity, RunnableWithData onOkAction, RunnableWithData onErrorAction,
                                View view) {
         OpenWeatherRepo.getInstance().getAPI().loadWeather(cityName,
@@ -34,14 +34,14 @@ public class RetrofitGetter {
                         if (response.body() != null && response.isSuccessful()) {
                             Data data = Converter.convert(response.body());
 
-                            Publisher.getInstance().notify(idx, data);
+                            Publisher.getInstance().notify(cityName, data);
 
                             if (onOkAction != null && activity != null) {
                                 onOkAction.setData(data);
                                 activity.runOnUiThread(onOkAction);
                             }
                         } else {
-                            Publisher.getInstance().notify(idx, new Data.Builder().build());
+                            Publisher.getInstance().notify(cityName, new Data.Builder().build());
                             if (activity != null && view != null && view.isShown()) {
                                 String error = activity.getString(R.string.city_not_foud);
 
@@ -58,7 +58,7 @@ public class RetrofitGetter {
                     //сбой при интернет подключении
                     @Override
                     public void onFailure(Call<WeatherData> call, Throwable t) {
-                        Publisher.getInstance().notify(idx, new Data.Builder().build());
+                        Publisher.getInstance().notify(cityName, new Data.Builder().build());
                         if (activity != null && view != null && view.isShown()) {
                             String error = t.getLocalizedMessage();
 

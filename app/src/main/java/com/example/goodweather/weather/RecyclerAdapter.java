@@ -9,8 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.goodweather.MainActivity;
 import com.example.goodweather.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
@@ -18,12 +20,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private List<String> data2;
     private IRVOnItemClick onItemClickCallback;
     private int itemLayoutId;
-    private Activity activity;
+    private MainActivity activity;
     private int itemIndexFromMenu;
 
-    public RecyclerAdapter(List<String> data1, List<String> data2, IRVOnItemClick onItemClickCallback, int itemLayoutId, Activity activity) {
+    public RecyclerAdapter(List<String> data1, IRVOnItemClick onItemClickCallback, int itemLayoutId, MainActivity activity) {
         this.data1 = data1;
-        this.data2 = data2;
+        data2 = new ArrayList<>(data1.size());
+        for (int i = 0; i < data1.size(); i++) {
+            data2.add(activity.getDefaultTemperature());
+        }
         this.onItemClickCallback = onItemClickCallback;
         this.itemLayoutId = itemLayoutId;
         this.activity = activity;
@@ -99,7 +104,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     if(onItemClickCallback != null) {
-                        onItemClickCallback.onItemClicked(position);
+                        onItemClickCallback.onItemClicked(data1.get(position));
                     }
                 }
             });
@@ -108,7 +113,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     if(onItemClickCallback != null) {
-                        onItemClickCallback.onItemClicked(position);
+                        onItemClickCallback.onItemClicked(data1.get(position));
                     }
                 }
             });
@@ -133,5 +138,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public int getItemIndexFromMenu() {
         return itemIndexFromMenu;
+    }
+
+    public void remove(int posititon) {
+        data1.remove(posititon);
+        data2.remove(posititon);
+        notifyItemRemoved(posititon);
+    }
+
+    public void add(String cityName) {
+        data1.add(cityName);
+        data2.add(activity.getDefaultTemperature());
+        notifyItemInserted(data1.size() - 1);
     }
 }

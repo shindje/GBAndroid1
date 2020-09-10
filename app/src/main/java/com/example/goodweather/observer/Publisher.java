@@ -26,9 +26,9 @@ public class Publisher {
         observers.remove(observer);
     }
 
-    public void notify(Integer idx, Data data) {
+    public void notify(String cityName, Data data) {
         for (IObserver observer : observers) {
-            observer.updateData(idx, data);
+            observer.updateData(cityName, data);
         }
     }
 }
