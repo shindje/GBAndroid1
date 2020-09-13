@@ -55,4 +55,6 @@
     <string name="search">Search</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
+    <string name="token">Token</string>
+    <string name="new_token_msg">Got new token. Stored in "Settings"</string>
 </resources>

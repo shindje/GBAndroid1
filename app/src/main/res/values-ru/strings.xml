@@ -51,4 +51,6 @@
     <string name="search">Поиск</string>
     <string name="connected">Подключено</string>
     <string name="disconnected">Отключено</string>
+    <string name="token">Токен</string>
+    <string name="new_token_msg">Получен новый токен. Сохранен в "Настройках"</string>
 </resources>
