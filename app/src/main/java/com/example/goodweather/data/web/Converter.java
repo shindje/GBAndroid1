@@ -1,8 +1,8 @@
-package com.example.goodweather.data;
+package com.example.goodweather.data.web;
 
 import androidx.work.Data;
 
-import com.example.goodweather.data.model.WeatherData;
+import com.example.goodweather.data.web.model.WeatherData;
 
 public class Converter {
     public static final String PARAM_TEMP_STR = "tempStr";

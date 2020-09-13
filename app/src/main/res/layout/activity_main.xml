@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0.3"
-            android:background="@drawable/clouds_v"
+            android:background="@drawable/clouds"
             android:orientation="vertical"/>
 
         <FrameLayout

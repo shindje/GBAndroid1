@@ -1,4 +1,4 @@
-package com.example.goodweather.data;
+package com.example.goodweather.data.web;
 
 import androidx.work.Data;
 

@@ -1,5 +1,6 @@
 package com.example.goodweather;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -17,7 +18,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.goodweather.data.RetrofitGetter;
+import com.example.goodweather.data.db.App;
+import com.example.goodweather.data.db.CityHistoryDao;
+import com.example.goodweather.data.db.CityHistorySource;
+import com.example.goodweather.data.db.model.CityHistory;
+import com.example.goodweather.data.web.RetrofitGetter;
 import com.example.goodweather.settings.SettingsFragment;
 import com.example.goodweather.weather.CitySelector;
 import com.example.goodweather.weather.RecyclerAdapter;
@@ -27,14 +32,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.List;
+import java.sql.Time;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements CityBottomSheetDialog.BottomSheetListener{
     private Toolbar toolbar;
-    private RecyclerAdapter adapter;
+    private RecyclerAdapter adapter = null;
+    private CityHistorySource cityHistorySource;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private static CitySelector citySelector;
+    private static final String SHARED_PREF_LAST_CITY = "last_city";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        setCitySelectorFragment();
+        setWeatherFragment();
         setOnClickForSideMenuItems();
     }
 
@@ -97,9 +105,8 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     public void getFullData() {
         Snackbar.make(toolbar, getString(R.string.data_updating), Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
-        List<String> cities = CitySelector.getCities(getResources());
-        for (int i = 0; i < cities.size(); i++) {
-            RetrofitGetter.getData(getApplicationContext(), this, cities.get(i), i,
+        for (String city: CitySelector.getCities(getResources())) {
+            RetrofitGetter.getData(getApplicationContext(), this, city,
                     this, null, null,null);
         }
     }
@@ -122,9 +129,12 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                 v -> {
                     EditText editText = contentView.findViewById(R.id.editText);
                     if (validateCityEditText(editText)) {
-                        CitySelector.addCity(this, this, editText.getText().toString(),
-                                getString(R.string.default_temperature), toolbar, adapter);
+                        String cityName = editText.getText().toString();
+                        CitySelector.addCity(this, this, cityName,
+                                toolbar, getAdapter());
                         alert.dismiss();
+                        citySelector.setCityName(cityName);
+                        setWeatherFragment();
                     }
                 }
         );
@@ -156,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         int id = item.getItemId();
         if (id == R.id.delete_context) {
             final CityBottomSheetDialog.BottomSheetListener bottomSheetListener = this;
-            CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(adapter.getItemIndexFromMenu()));
+            CityBottomSheetDialog dialog = new CityBottomSheetDialog(bottomSheetListener, CitySelector.getCities(getResources()).get(getAdapter().getItemIndexFromMenu()));
             dialog.show(getSupportFragmentManager(), "Диалог удаления города");
         }
         return super.onContextItemSelected(item);
@@ -169,8 +179,50 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     @Override
     public void onBottomClicked(int code) {
         if (code == CityBottomSheetDialog.OK_CODE) {
-            CitySelector.deleteCity(adapter.getItemIndexFromMenu(), adapter);
+            CitySelector.deleteCity(getAdapter().getItemIndexFromMenu(), getAdapter());
         }
+    }
+
+    public String getDefaultCityName() {
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        return sharedPref.getString(SHARED_PREF_LAST_CITY, getString(R.string.defaultCity));
+    }
+
+    public String getDefaultTemperature() {
+        return getString(R.string.default_temperature);
+    }
+
+    public void setLastCityName(String cityName) {
+        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(SHARED_PREF_LAST_CITY, cityName);
+        editor.apply();
+    }
+
+    public void addHistory(String cityName, String temperature) {
+        CityHistory history = new CityHistory();
+        history.cityName = cityName;
+        Date date = new Date();
+        history.date = date;
+        history.time = new Time(date.getTime());
+        try {
+            history.temperature = Integer.parseInt(temperature);
+        } catch (Exception e) {
+
+        }
+        getCityHistorySource().addHistory(history);
+        getAdapter().notifyDataSetChanged();
+    }
+
+    public void setWeatherFragment() {
+        String cityName = getDefaultCityName();
+        if (citySelector == null) {
+            citySelector = new CitySelector();
+            citySelector.setCityName(cityName);
+        } else {
+            cityName = citySelector.getCityName();
+        }
+        setFragment(WeatherFragment.create(cityName));
     }
 
     private void setCitySelectorFragment() {
@@ -195,6 +247,11 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_weather: {
+                    setWeatherFragment();
+                    drawer.close();
+                    break;
+                }
+                case R.id.nav_city: {
                     setCitySelectorFragment();
                     drawer.close();
                     break;
@@ -220,44 +277,31 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     public void setFragment(Fragment fragment) {
-        if (fragment instanceof WeatherFragment) {
-            showWeatherFragment();
-        } else {
-            hideWeatherFragment();
-        }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
-    private void hideWeatherFragment() {
-        WeatherFragment detail = (WeatherFragment)
-                getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
-        if (detail != null && !detail.isHidden()) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.hide(detail);
-            fragmentTransaction.commit();
+    RecyclerAdapter getAdapter() {
+        if (adapter == null) {
+            adapter = new RecyclerAdapter(getCityHistorySource(), null, R.layout.city_item, this);
         }
+        return adapter;
     }
 
-    private void showWeatherFragment() {
-        WeatherFragment detail = (WeatherFragment)
-                getSupportFragmentManager().findFragmentById(R.id.weather_fragment);
-        if (detail != null && detail.isHidden()) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.show(detail);
-            fragmentTransaction.commit();
+    CityHistorySource getCityHistorySource() {
+        if (cityHistorySource == null) {
+            CityHistoryDao dao = App
+                    .getInstance()
+                    .getCityHistoryDao();
+            cityHistorySource = new CityHistorySource(dao);
+
         }
+        return cityHistorySource;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (navigationView.getCheckedItem() != null && navigationView.getCheckedItem().getItemId() == R.id.nav_weather) {
-            showWeatherFragment();
-        } else {
-            hideWeatherFragment();
-        }
-        super.onBackPressed();
+    public void setCityHistorySource(CityHistorySource cityHistorySource) {
+        this.cityHistorySource = cityHistorySource;
     }
 }

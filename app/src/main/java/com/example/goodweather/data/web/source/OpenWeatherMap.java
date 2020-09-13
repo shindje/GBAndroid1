@@ -1,9 +1,6 @@
-package com.example.goodweather.data.source;
-
-import android.util.Log;
+package com.example.goodweather.data.web.source;
 
 import com.example.goodweather.BuildConfig;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
