@@ -49,4 +49,6 @@
     <string name="data_updating">Обновление данных</string>
     <string name="city_not_foud">Город не найден</string>
     <string name="search">Поиск</string>
+    <string name="connected">Подключено</string>
+    <string name="disconnected">Отключено</string>
 </resources>

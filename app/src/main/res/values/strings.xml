@@ -53,4 +53,6 @@
     <string name="city_not_foud">City not found</string>
     <string name="dots" translatable="false">...</string>
     <string name="search">Search</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
 </resources>
