@@ -1,6 +1,12 @@
 package com.example.goodweather;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -43,17 +49,18 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     private DrawerLayout drawer;
     private static CitySelector citySelector;
     private static final String SHARED_PREF_LAST_CITY = "last_city";
+    private WiFiStateReceiver wiFiStateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Settings settings = Settings.getInstance();
+        Settings settings = Settings.getInstance(this);
         if (settings.isDarkTheme()) {
             setTheme(R.style.AppDarkTheme);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-        if (savedInstanceState == null && Settings.getInstance().isUpdateOnStart()) {
+        if (savedInstanceState == null && Settings.getInstance(this).isUpdateOnStart()) {
             getFullData();
         }
 
@@ -66,6 +73,26 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
         setWeatherFragment();
         setOnClickForSideMenuItems();
+
+        wiFiStateReceiver = new WiFiStateReceiver();
+        registerReceiver(wiFiStateReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+        initNotificationChannel();
+    }
+
+    // инициализация канала нотификаций
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("2", "name", importance);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(wiFiStateReceiver);
     }
 
     private void initViews() {

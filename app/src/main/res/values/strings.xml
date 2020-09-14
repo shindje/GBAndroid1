@@ -53,4 +53,8 @@
     <string name="city_not_foud">City not found</string>
     <string name="dots" translatable="false">...</string>
     <string name="search">Search</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="token">Token</string>
+    <string name="new_token_msg">Got new token. Stored in "Settings"</string>
 </resources>
