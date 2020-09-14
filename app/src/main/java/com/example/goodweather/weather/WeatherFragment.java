@@ -172,8 +172,10 @@ public class WeatherFragment extends Fragment implements IObserver {
                         @Override
                         public void onError(Exception e) {
                             weatherIconProgressBar.setVisibility(View.INVISIBLE);
-                            weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_info_50));
-                            weatherIconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            if (isAdded()) {
+                                weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_info_50));
+                                weatherIconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            }
                             weatherIconView.setVisibility(View.VISIBLE);
                         }
                     });
