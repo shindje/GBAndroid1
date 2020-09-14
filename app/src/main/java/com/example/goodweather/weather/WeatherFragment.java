@@ -214,7 +214,9 @@ public class WeatherFragment extends Fragment implements IObserver {
         @Override
         public void run() {
             updateViews(data);
-            ((MainActivity)requireActivity()).addHistory(getCityName(), data.getString(Converter.PARAM_TEMP_STR));
+            if (isAdded()) {
+                ((MainActivity) requireActivity()).addHistory(getCityName(), data.getString(Converter.PARAM_TEMP_STR));
+            }
         }
     };
     RunnableWithData onUpdateErrorAction = new RunnableWithData() {

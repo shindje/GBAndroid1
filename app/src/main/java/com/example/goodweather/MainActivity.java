@@ -173,10 +173,6 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
             editText.setError(getString(R.string.addDialogEmptyError));
             return false;
         }
-        if (CitySelector.getCities(getResources()).indexOf(text) > -1) {
-            editText.setError(getString(R.string.addDialogAlreadyAddedError));
-            return false;
-        }
         return true;
     }
 
