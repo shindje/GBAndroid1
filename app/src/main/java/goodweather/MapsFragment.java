@@ -2,8 +2,11 @@ package goodweather;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Objects;
+
+import goodweather.data.web.model.Main;
+import goodweather.weather.WeatherFragment;
 
 public class MapsFragment extends Fragment {
 
@@ -32,7 +40,22 @@ public class MapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            ((MainActivity)requireActivity()).requestLocationPemissions(() -> {
+                // Ещё раз проверим разрешения (требование SDK)
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                    return;
 
+                googleMap.setMyLocationEnabled(true);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                googleMap.getUiSettings().setZoomControlsEnabled(true);
+
+                googleMap.setOnMapClickListener((latLng) -> {
+                    WeatherFragment fragment = WeatherFragment.create(null,
+                            Double.toString(latLng.latitude), Double.toString(latLng.longitude));
+                    ((MainActivity)requireActivity()).setWeatherFragment(fragment);
+                });
+            });
         }
     };
 
@@ -52,5 +75,17 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((MainActivity)requireActivity()).setFabVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void onPause() {
+        ((MainActivity)requireActivity()).setFabVisibility(View.VISIBLE);
+        super.onPause();
     }
 }

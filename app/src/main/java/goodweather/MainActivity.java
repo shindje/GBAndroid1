@@ -62,8 +62,9 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     private static CitySelector citySelector;
     private static final String SHARED_PREF_LAST_CITY = "last_city";
     private WiFiStateReceiver wiFiStateReceiver;
-    private static final int PERMISSION_REQUEST_CODE = 10;
+    private FloatingActionButton fab;
 
+    private static final int PERMISSION_REQUEST_CODE = 10;
     public static final String TAG = "GOOD_WEATHER";
 
     @Override
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         // Обработка нажатия на плавающую кнопку
         fab.setOnClickListener(this::showAddItemDialog);
     }
@@ -297,6 +298,11 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
                     drawer.close();
                     break;
                 }
+                case R.id.nav_map: {
+                    setMapFragment();
+                    drawer.close();
+                    break;
+                }
                 case R.id.nav_settings: {
                     setSetingsFragment();
                     drawer.close();
@@ -324,6 +330,11 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         fragmentTransaction.commit();
     }
 
+    public void setFabVisibility(int visibility) {
+        fab.setVisibility(visibility);
+    }
+
+
     RecyclerAdapter getAdapter() {
         if (adapter == null) {
             adapter = new RecyclerAdapter(getCityHistorySource(), null, R.layout.city_item, this);
@@ -347,16 +358,15 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     }
 
     private void showCurrentLocationWeather() {
-        requestPemissions();
+        requestLocationPemissions(this::requestLocation);
     }
 
-    private void requestPemissions() {
+    void requestLocationPemissions(Runnable run) {
         // Проверим, есть ли Permission’ы, и если их нет, запрашиваем их у
         // пользователя
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Запрашиваем координаты
-            requestLocation();
+            run.run();
         } else {
             // Permission’ов нет, запрашиваем их у пользователя
             requestLocationPermissions();
@@ -396,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
     // Запрашиваем координаты
     private void requestLocation() {
-        // Ещё раз проверим разрешения
+        // Ещё раз проверим разрешения (требование SDK)
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
@@ -430,8 +440,8 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
             }
         };
 
-        locationManager.requestSingleUpdate(locationManager.NETWORK_PROVIDER, locationListener, null);
-        locationManager.requestSingleUpdate(locationManager.GPS_PROVIDER, locationListener, null);
+        locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
     }
 
     public static CitySelector getCitySelector() {
@@ -439,5 +449,9 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
             citySelector = new CitySelector();
         }
         return citySelector;
+    }
+
+    private void setMapFragment() {
+        setFragment(new MapsFragment());
     }
 }

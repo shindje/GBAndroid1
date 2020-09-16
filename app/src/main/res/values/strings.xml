@@ -59,4 +59,5 @@
     <string name="new_token_msg">Got new token. Stored in "Settings"</string>
     <string name="error_need_permission">Need permissions to continue</string>
     <string name="current_location">Current location</string>
+    <string name="map">Map</string>
 </resources>
