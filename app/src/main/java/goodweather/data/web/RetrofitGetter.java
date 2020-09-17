@@ -59,6 +59,7 @@ public class RetrofitGetter {
                     //сбой при интернет подключении
                     @Override
                     public void onFailure(Call<WeatherData> call, Throwable t) {
+                        t.printStackTrace();
                         Publisher.getInstance().notify(cityName, new Data.Builder().build());
                         if (activity != null && view != null && view.isShown()) {
                             String error = t.getLocalizedMessage();
