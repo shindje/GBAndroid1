@@ -50,7 +50,7 @@
         android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cityTextView"
-        app:srcCompat="@drawable/ic_baseline_info_50"
+        app:srcCompat="@drawable/ic_outline_error_outline_24"
         tools:ignore="ContentDescription" />
 
     <ProgressBar

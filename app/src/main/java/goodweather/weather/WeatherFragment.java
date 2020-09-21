@@ -142,7 +142,6 @@ public class WeatherFragment extends Fragment implements IObserver {
     private void setOnClickListeners(){
         addInfoCheckBox.setOnClickListener(view -> setViewsVisible());
         updateDataButton.setOnClickListener(this::getData);
-        weatherIconView.setOnClickListener(this::getData);
         yandexWeatherBtn.setOnClickListener(view -> {
             String cityForURL = getCityforURL();
             Uri uri = Uri.parse("https://yandex.ru/pogoda/" + cityForURL);
@@ -188,7 +187,7 @@ public class WeatherFragment extends Fragment implements IObserver {
                         public void onError(Exception e) {
                             weatherIconProgressBar.setVisibility(View.INVISIBLE);
                             if (isAdded()) {
-                                weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_info_50));
+                                weatherIconView.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_outline_error_outline_24));
                                 weatherIconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                             }
                             weatherIconView.setVisibility(View.VISIBLE);

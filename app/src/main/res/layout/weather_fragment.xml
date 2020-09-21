@@ -48,7 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cityTextView"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_baseline_info_50"
+        app:srcCompat="@drawable/ic_outline_error_outline_24"
         android:scaleType="centerInside"
         tools:ignore="ContentDescription" />
 
