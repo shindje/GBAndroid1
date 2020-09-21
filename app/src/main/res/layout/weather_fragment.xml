@@ -4,20 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="goodweather.MainActivity">
 
     <TextView
         android:id="@+id/cityTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/defaultCity"
+        android:text="@string/dots"
         android:textColor="@color/design_default_color_secondary_variant"
         style="@style/LargeText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.goodweather.custom.TemperatureView
+    <goodweather.custom.TemperatureView
         android:id="@+id/temperatureView"
         android:layout_width="100dp"
         android:layout_height="35dp"
@@ -48,7 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cityTextView"
         android:visibility="invisible"
-        app:srcCompat="@drawable/ic_baseline_info_50"
+        app:srcCompat="@drawable/ic_outline_error_outline_24"
         android:scaleType="centerInside"
         tools:ignore="ContentDescription" />
 

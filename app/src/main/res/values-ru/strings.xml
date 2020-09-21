@@ -53,4 +53,7 @@
     <string name="disconnected">Отключено</string>
     <string name="token">Токен</string>
     <string name="new_token_msg">Получен новый токен. Сохранен в "Настройках"</string>
+    <string name="error_need_permission">Для продолжения необходимы разрешения</string>
+    <string name="current_location">Текущее местоположение</string>
+    <string name="map">Карта</string>
 </resources>
