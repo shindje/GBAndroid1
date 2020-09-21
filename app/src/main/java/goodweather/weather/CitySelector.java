@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
 
 import goodweather.MainActivity;
+import goodweather.Utils;
 import goodweather.data.db.App;
 import goodweather.data.db.CityHistoryDao;
 import goodweather.data.db.CityHistorySource;
@@ -155,7 +156,7 @@ public class CitySelector extends Fragment implements IObserver {
 
     private String getLastCityName() {
         if (getActivity() != null) {
-            return ((MainActivity)getActivity()).getLastCityName();
+            return Utils.getLastCityName(getActivity());
         } else
             return null;
     }

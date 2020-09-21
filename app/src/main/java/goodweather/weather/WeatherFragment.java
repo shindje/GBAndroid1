@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
 
 import goodweather.MainActivity;
+import goodweather.Utils;
 import goodweather.custom.TemperatureView;
 import goodweather.data.web.Converter;
 import goodweather.data.web.RetrofitGetter;
@@ -94,7 +95,7 @@ public class WeatherFragment extends Fragment implements IObserver {
         super.onResume();
         Publisher.getInstance().subscribe(this);
         if (!isHidden()) {
-            ((MainActivity)requireActivity()).setLastCityName(getCityName());
+            Utils.setLastCityName(getCityName(), requireActivity());
             getData(weatherIconView);
         }
     }
@@ -162,7 +163,7 @@ public class WeatherFragment extends Fragment implements IObserver {
                 args.putString("cityName", name);
                 setArguments(args);
                 cityTextView.setText(name);
-                ((MainActivity)requireActivity()).setLastCityName(name);
+                Utils.setLastCityName(name, requireActivity());
             }
             MainActivity.getCitySelector().setCityName(getCityName());
             temperatureTextView.setText(data.getString(Converter.PARAM_TEMP_STR));

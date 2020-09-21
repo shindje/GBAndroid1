@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private static CitySelector citySelector;
-    private static final String SHARED_PREF_LAST_CITY = "last_city";
     private WiFiStateReceiver wiFiStateReceiver;
     private FloatingActionButton fab;
 
@@ -219,20 +218,8 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         }
     }
 
-    public String getLastCityName() {
-        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
-        return sharedPref.getString(SHARED_PREF_LAST_CITY, null);
-    }
-
     public String getDefaultTemperature() {
         return getString(R.string.default_temperature);
-    }
-
-    public void setLastCityName(String cityName) {
-        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(SHARED_PREF_LAST_CITY, cityName);
-        editor.apply();
     }
 
     public void addHistory(String cityName, String temperature) {
@@ -252,11 +239,11 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
     public void setWeatherFragment(Fragment weatherFragment) {
         if (weatherFragment == null) {
-            if ((citySelector == null || citySelector.getCityName() == null) && getLastCityName() == null) {
+            if ((citySelector == null || citySelector.getCityName() == null) && Utils.getLastCityName(this) == null) {
                 showCurrentLocationWeather();
             } else {
                 if (citySelector == null) {
-                    String lastCityName = getLastCityName();
+                    String lastCityName = Utils.getLastCityName(this);
                     citySelector = new CitySelector();
                     citySelector.setCityName(lastCityName);
                 }

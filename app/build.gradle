@@ -33,6 +33,19 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    flavorDimensions 'geo'
+    productFlavors {
+        geo {
+            dimension 'geo'
+            versionNameSuffix '.geo'
+            applicationIdSuffix '.geo'
+        }
+        noGeo {
+            dimension 'geo'
+            versionNameSuffix '.no_geo'
+            applicationIdSuffix '.no_geo'
+        }
+    }
 }
 
 dependencies {
