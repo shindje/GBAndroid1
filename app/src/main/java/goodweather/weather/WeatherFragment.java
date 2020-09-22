@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.Data;
 
 import goodweather.MainActivity;
+import goodweather.Utils;
 import goodweather.custom.TemperatureView;
 import goodweather.data.web.Converter;
 import goodweather.data.web.RetrofitGetter;
@@ -32,6 +33,8 @@ import com.example.goodweather.R;
 import goodweather.observer.IObserver;
 import goodweather.observer.Publisher;
 
+import com.google.android.gms.common.SignInButton;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -51,6 +54,8 @@ public class WeatherFragment extends Fragment implements IObserver {
     private ImageView weatherIconView;
     private ProgressBar weatherIconProgressBar;
     private String lat, lon;
+    private SignInButton signInButton;
+    private MaterialButton signOutButton;
 
     public static WeatherFragment create(String cityName, String lat, String lon) {
         WeatherFragment fragment = new WeatherFragment();
@@ -94,9 +99,10 @@ public class WeatherFragment extends Fragment implements IObserver {
         super.onResume();
         Publisher.getInstance().subscribe(this);
         if (!isHidden()) {
-            ((MainActivity)requireActivity()).setLastCityName(getCityName());
+            Utils.setLastCityName(getCityName(), requireActivity());
             getData(weatherIconView);
         }
+        setSignInVisibility(((MainActivity)requireActivity()).getAccount() == null);
     }
 
     @Override
@@ -120,6 +126,8 @@ public class WeatherFragment extends Fragment implements IObserver {
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescription);
         weatherIconView = view.findViewById(R.id.weatherIcon);
         weatherIconProgressBar = view.findViewById(R.id.weatherIconProgressBar);
+        signInButton = view.findViewById(R.id.g_sign_in_button);
+        signOutButton = view.findViewById(R.id.g_sing_out_button);
     }
 
     private void initList() {
@@ -148,6 +156,8 @@ public class WeatherFragment extends Fragment implements IObserver {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         });
+        signInButton.setOnClickListener(v -> ((MainActivity)requireActivity()).signIn(this));
+        signOutButton.setOnClickListener(v -> ((MainActivity)requireActivity()).signOut(this));
     }
 
     public static String getRandomTemperature() {
@@ -162,7 +172,7 @@ public class WeatherFragment extends Fragment implements IObserver {
                 args.putString("cityName", name);
                 setArguments(args);
                 cityTextView.setText(name);
-                ((MainActivity)requireActivity()).setLastCityName(name);
+                Utils.setLastCityName(name, requireActivity());
             }
             MainActivity.getCitySelector().setCityName(getCityName());
             temperatureTextView.setText(data.getString(Converter.PARAM_TEMP_STR));
@@ -252,5 +262,15 @@ public class WeatherFragment extends Fragment implements IObserver {
                 .setAction("Action", null).show();
         RetrofitGetter.getData(requireContext(), getViewLifecycleOwner(), getCityName(), lat, lon,
                 getActivity(), onUpdateDataAction, onUpdateErrorAction, requireView());
+    }
+
+    public void setSignInVisibility(boolean isVisible) {
+        if (isVisible) {
+            signInButton.setVisibility(View.VISIBLE);
+            signOutButton.setVisibility(View.INVISIBLE);
+        } else {
+            signInButton.setVisibility(View.INVISIBLE);
+            signOutButton.setVisibility(View.VISIBLE);
+        }
     }
 }

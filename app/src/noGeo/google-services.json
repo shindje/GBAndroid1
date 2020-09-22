@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:406194898584:android:80bba7ec6ce192d615f2ed",
         "android_client_info": {
-          "package_name": "com.example.goodweather"
+          "package_name": "com.example.goodweather.no_geo"
         }
       },
       "oauth_client": [
@@ -18,12 +18,12 @@
           "client_id": "406194898584-jmco563oi36a7bqr73n0he4oicr5746f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.goodweather",
+            "package_name": "com.example.goodweather.no_geo",
             "certificate_hash": "e815693d332312c08c840bbad5b7fb01cb6e0b29"
           }
         },
         {
-          "client_id": "406194898584-056ntiql4u0ibkm9mn3uvdersoh2d2bk.apps.googleusercontent.com",
+          "client_id": "406194898584-jmco563oi36a7bqr73n0he4oicr5746f.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -36,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "406194898584-056ntiql4u0ibkm9mn3uvdersoh2d2bk.apps.googleusercontent.com",
+              "client_id": "406194898584-jmco563oi36a7bqr73n0he4oicr5746f.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

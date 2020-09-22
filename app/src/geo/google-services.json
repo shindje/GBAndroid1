@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "406194898584",
+    "firebase_url": "https://goodweather-92be6.firebaseio.com",
+    "project_id": "goodweather-92be6",
+    "storage_bucket": "goodweather-92be6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406194898584:android:80bba7ec6ce192d615f2ed",
+        "android_client_info": {
+          "package_name": "com.example.goodweather.geo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406194898584-jmco563oi36a7bqr73n0he4oicr5746f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.goodweather.geo",
+            "certificate_hash": "e815693d332312c08c840bbad5b7fb01cb6e0b29"
+          }
+        },
+        {
+          "client_id": "406194898584-jmco563oi36a7bqr73n0he4oicr5746f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMhzQIbFWBoan2OLTONR2C1AtI28aJOBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406194898584-jmco563oi36a7bqr73n0he4oicr5746f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

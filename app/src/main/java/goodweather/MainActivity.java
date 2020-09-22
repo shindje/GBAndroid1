@@ -4,14 +4,12 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +20,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -40,15 +42,23 @@ import goodweather.data.db.App;
 import goodweather.data.db.CityHistoryDao;
 import goodweather.data.db.CityHistorySource;
 import goodweather.data.web.RetrofitGetter;
-import goodweather.data.web.model.Main;
 import goodweather.settings.SettingsFragment;
 import goodweather.weather.CitySelector;
 import goodweather.weather.RecyclerAdapter;
 import goodweather.settings.Settings;
 import goodweather.weather.WeatherFragment;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
 
 import java.sql.Time;
 import java.util.Date;
@@ -60,12 +70,24 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private static CitySelector citySelector;
-    private static final String SHARED_PREF_LAST_CITY = "last_city";
     private WiFiStateReceiver wiFiStateReceiver;
     private FloatingActionButton fab;
+    private LinearLayout navHeader;
+    private TextView navName;
+    private TextView navWeb;
+    private ImageView navAvatarIcon;
+    private WeatherFragment weatherFragment;
+    private GoogleSignInAccount account;
 
     private static final int PERMISSION_REQUEST_CODE = 10;
     public static final String TAG = "GOOD_WEATHER";
+
+    // Используется, чтобы определить результат Activity регистрации через
+    // Google
+    private static final int RC_SIGN_IN = 40404;
+
+    // Клиент для регистрации пользователя через Google
+    private GoogleSignInClient googleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         setContentView(R.layout.activity_main);
         initViews();
 
-        drawer = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -90,6 +110,16 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         wiFiStateReceiver = new WiFiStateReceiver();
         registerReceiver(wiFiStateReceiver, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
         initNotificationChannel();
+
+        // Конфигурация запроса на регистрацию пользователя, чтобы получить
+        // идентификатор пользователя, его почту и основной профайл
+        // (регулируется параметром)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        // Получаем клиента для регистрации и данные по клиенту
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     // инициализация канала нотификаций
@@ -115,6 +145,14 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         fab = findViewById(R.id.fab);
         // Обработка нажатия на плавающую кнопку
         fab.setOnClickListener(this::showAddItemDialog);
+
+        drawer = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        navHeader = (LinearLayout) navigationView.getHeaderView(0);
+
+        navName = navHeader.findViewById(R.id.navName);
+        navWeb = navHeader.findViewById(R.id.navWeb);
+        navAvatarIcon = navHeader.findViewById(R.id.navAvatarIcon);
     }
 
     @Override
@@ -219,20 +257,8 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
         }
     }
 
-    public String getLastCityName() {
-        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
-        return sharedPref.getString(SHARED_PREF_LAST_CITY, null);
-    }
-
     public String getDefaultTemperature() {
         return getString(R.string.default_temperature);
-    }
-
-    public void setLastCityName(String cityName) {
-        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(SHARED_PREF_LAST_CITY, cityName);
-        editor.apply();
     }
 
     public void addHistory(String cityName, String temperature) {
@@ -252,11 +278,11 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
     public void setWeatherFragment(Fragment weatherFragment) {
         if (weatherFragment == null) {
-            if ((citySelector == null || citySelector.getCityName() == null) && getLastCityName() == null) {
+            if ((citySelector == null || citySelector.getCityName() == null) && Utils.getLastCityName(this) == null) {
                 showCurrentLocationWeather();
             } else {
                 if (citySelector == null) {
-                    String lastCityName = getLastCityName();
+                    String lastCityName = Utils.getLastCityName(this);
                     citySelector = new CitySelector();
                     citySelector.setCityName(lastCityName);
                 }
@@ -453,5 +479,89 @@ public class MainActivity extends AppCompatActivity implements CityBottomSheetDi
 
     private void setMapFragment() {
         setFragment(new MapsFragment());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Проверим, входил ли пользователь в это приложение через Google
+        account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {
+            // Обновим данные пользователя и выведем их на экран
+            updateUI(account);
+        }
+    }
+
+    // Получаем результаты аутентификации от окна регистрации пользователя
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            // Когда сюда возвращается Task, результаты аутентификации уже
+            // готовы
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    // Инициируем регистрацию пользователя
+    public void signIn(WeatherFragment fragment) {
+        weatherFragment = fragment;
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    // Получаем данные пользователя
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Регистрация прошла успешно
+            weatherFragment.setSignInVisibility(false);
+            this.account = account;
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure
+            // reason. Please refer to the GoogleSignInStatusCodes class
+            // reference for more information.
+            Log.d(TAG, "signInResult: failed code=" + e.getStatusCode());
+        }
+    }
+
+    // Обновляем данные о пользователе на экране
+    public void updateUI(GoogleSignInAccount account) {
+        if (account != null) {
+            navName.setText(account.getDisplayName());
+            navWeb.setText(account.getEmail());
+            Picasso.get()
+                    .load(account.getPhotoUrl())
+                    .into(navAvatarIcon);
+            Toast.makeText(this, getString(R.string.logged_in) + ": " + account.getDisplayName(),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            navName.setText(getString(R.string.nav_header_title));
+            navWeb.setText(getString(R.string.nav_header_subtitle));
+            navAvatarIcon.setImageDrawable(getDrawable(R.mipmap.ic_launcher_round));
+            Toast.makeText(this, getString(R.string.logged_out),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Выход из учётной записи в приложении
+    public void signOut(WeatherFragment fragment) {
+        googleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        account = null;
+                        fragment.setSignInVisibility(true);
+                        updateUI(null);
+                    }
+                });
+    }
+
+    public GoogleSignInAccount getAccount() {
+        return account;
     }
 }

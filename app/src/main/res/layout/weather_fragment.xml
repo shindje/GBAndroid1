@@ -127,6 +127,7 @@
         app:layout_constraintTop_toTopOf="@+id/pressureTextView" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -138,22 +139,43 @@
             android:id="@+id/updateDataButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/updateDataButtonText"
-            android:layout_weight="1"
             android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:text="@string/updateDataButtonText"
             app:icon="@drawable/ic_baseline_refresh_24" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/yandexWeatherBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:text="@string/yandexWeatherBtnText"
             app:icon="@drawable/umbrella_red"
-            android:layout_weight="1"
-            android:layout_margin="8dp"
             app:iconSize="20dp" />
 
     </LinearLayout>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/g_sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/g_sing_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        android:text="@string/sign_out"
+        app:icon="@drawable/ic_baseline_exit_to_app_24"
+        app:iconSize="20dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
