@@ -56,4 +56,7 @@
     <string name="error_need_permission">Для продолжения необходимы разрешения</string>
     <string name="current_location">Текущее местоположение</string>
     <string name="map">Карта</string>
+    <string name="logged_in">Выполнен вход</string>
+    <string name="sign_out">Выйти</string>
+    <string name="logged_out">Выполнен выход</string>
 </resources>
